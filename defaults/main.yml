@@ -26,7 +26,7 @@ homeflix_jellyfin_libraries:
     collection_type: "tvshows"
     location: "{{ homeflix_data_volume }}/tv"
 
-# each indexer has its mandatory fields 
+# each indexer has its mandatory fields
 # it causes a harder way to maintain a standard template list
 homeflix_prowlarr_indexers:
   - name: 1337x

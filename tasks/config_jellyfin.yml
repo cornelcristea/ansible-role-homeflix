@@ -133,7 +133,7 @@
           Content-Type: "application/json"
         body_format: json
         body:
-          IsHidden: true #"{{ user_policy.IsAdministrator | default(false) }}"
+          IsHidden: true # "{{ user_policy.IsAdministrator | default(false) }}"
           AuthenticationProviderId: "Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider"
           PasswordResetProviderId: "Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider"
         status_code: 204

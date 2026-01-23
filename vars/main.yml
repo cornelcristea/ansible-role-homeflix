@@ -75,5 +75,4 @@ homeflix_docker_services:
     ports:
       - "{{ homeflix_sonarr_port }}:8989"
 
-homeflix_jellyfin_host: 
-  "{{ homeflix_jellyfin_domain if homeflix_traefik_network is defined else 'localhost' ~ ':' ~ homeflix_jellyfin_port }}"
+homeflix_jellyfin_host: "{{ homeflix_jellyfin_domain if homeflix_traefik_network is defined else 'localhost' ~ ':' ~ homeflix_jellyfin_port }}"

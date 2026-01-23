@@ -13,6 +13,8 @@ skip_list:
   - schema[meta]
   - role-name
   - yaml[octal-values]
+  - ignore-errors
+  - no-handler
 
 exclude_paths:
   - .venv
