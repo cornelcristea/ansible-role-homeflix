@@ -15,8 +15,8 @@ homeflix_jellyfin_server_name: HomeFlix
 # overwrite this variable in your host vars
 # encrypsted passwords are recommended
 homeflix_jellyfin_users:
-  - username: Homeflix
-    password: StrongPassword123!
+  - username: homeflix
+    password: StrongPass123!
 
 homeflix_jellyfin_libraries:
   - name: "Movies"

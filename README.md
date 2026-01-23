@@ -3,21 +3,44 @@
 
 ## Description
 
-This Ansible role deploys a full **HomeFlix media server stack** with Docker containers:
+This Ansible role deploys a full **media server stack** as docker containers:
 
-- **Jellyfin:** Media server  
-- **Radarr:** Movies manager  
-- **Sonarr:** TV shows manager  
-- **Prowlarr:** Indexers manager  
-- **Recyclarr:** Syncs TRaSH-Guides settings to Sonarr/Radarr  
-- **qBittorrent:** Download client  
-- **Seer:** Media requester  
-- **Flaresolverr:** Cloudflare bypass tool  
-- **Bazarr:** Subtitle manager  
+- **Bazarr:** Subtitle manager
+- **Flaresolverr:** Cloudflare bypass tool
+- **Jellyfin:** Media streaming
+- **Prowlarr:** Indexers manager
+- **qBittorrent:** Download client
+- **Radarr:** Movies manager
+- **Recyclarr:** Syncs TRaSH-Guides settings to Sonarr/Radarr
+- **Seer:** Media requester
+- **Sonarr:** TV shows manager 
 
+The working flow of these services is described in the following diagram.
+
+```
+Seer (Requester)
+      |
+      v
+Prowlarr (Indexers) --> Flaresolverr (Cloudflare bypass)
+      |
+      +----------------+
+      |                |
+      v                v
+  Radarr (Movies)   Sonarr (TV Shows)
+      |                |
+      +------> Recyclarr (TRaSH Rules)
+      |                |
+      +------> Bazarr (Subtitles)
+      |                |
+      +------> qBittorrent (Download)
+                        |
+                        v
+                  Jellyfin (Streaming)
+```
 
 ## Requirements
-- Linux host
+
+- Linux OS with Debian distro (e.g Ubuntu)
 - Docker & Docker Compose
 - Ansible ≥ 2.14
 - Traefik (optional for Reverse Proxy)
@@ -33,8 +56,8 @@ This Ansible role deploys a full **HomeFlix media server stack** with Docker con
 | `homeflix_data_folders` | Media subfolders | `downloads, movies, tv` | Automatically created |
 | `homeflix_jellyfin_domain` | Jellyfin domain (for reverse proxy) | `localhost` | Update if using Traefik |
 | `homeflix_jellyfin_server_name` | Name displayed in Jellyfin UI | `HomeFlix` | Optional |
-| `homeflix_jellyfin_users` | List of users with passwords | `username: Homeflix / password: StrongPassword123!` | Encrypted passwords recommended |
-| `homeflix_jellyfin_libraries` | Media libraries | Movies & TV |  |
+| `homeflix_jellyfin_users` | List of users with passwords | `username`: homeflix<br> `password`: StrongPass123! | Encrypted passwords recommended |
+| `homeflix_jellyfin_libraries` | Media libraries | Movies & TV Shows |  |
 | `homeflix_prowlarr_indexers` | List of preconfigured indexers | 1337x, EZTV, LimeTorrents, The Pirate Bay, showRSS | based on Cardigann configuration |
 | `homeflix_qbittorrent_password` | Default qBittorrent password | `adminadmin` | Change after deployment |
 | `homeflix_bazarr_api_key` | Default Bazarr API key | `463482c2b8172db0ba2736f6a0b3dbc7` | Generate a new key after deployment |
@@ -54,6 +77,8 @@ This Ansible role deploys a full **HomeFlix media server stack** with Docker con
 ## Notes
 
 - Traefik reverse proxy network is optional — enable by uncommenting `homeflix_traefik_network` variable.  
+- Each service has default **admin** user and its password is **admin** (for qBittorent, the password is **adminadmin**). After first deploy, the passowrds have to be changed.
+- Jellyfin and Bazarr have a default API key that needs to be generated after first deploy and save them as variables (check `default.yml`). Do same thing with qBittorrent password.
 - Always use **encrypted passwords** in host_vars for sensitive services.  
 - Make sure **ports are available** and **media folders exist** before deployment.  
 - <b>After deployment, update API keys and passwords to secure values.</b>
@@ -76,7 +101,6 @@ This Ansible role deploys a full **HomeFlix media server stack** with Docker con
   roles:
     - homeflix
 ```
-
 
 ## How to Contribute
 
