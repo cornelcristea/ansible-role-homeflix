@@ -54,7 +54,7 @@
       register: services_result
 
     - name: Install | Wait until all services are up
-      command: sleep 10
+      command: sleep 15
       when: services_result.changed
   tags:
     - update_docker_compose

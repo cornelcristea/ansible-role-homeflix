@@ -11,8 +11,8 @@ services:
         max-size: "10m"
         max-file: "3"
     environment:
-      - PUID="{{ homeflix_puid }}"
-      - PGID="{{ homeflix_pgid }}"
+      - PUID={{ homeflix_puid }}
+      - PGID={{ homeflix_pgid }}
       - TZ={{ homeflix_timezone }}
 {% if service.name != "flaresolverr" %}
     volumes:
