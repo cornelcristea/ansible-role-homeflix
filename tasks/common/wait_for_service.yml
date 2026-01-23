@@ -1,7 +1,7 @@
 ---
 - name: Wait for service to be up
   uri:
-    url: "http://{{ ansible_host }}:{{ service_port }}"
+    url: "http://localhost:{{ service_port }}"
     method: GET
   register: service_up
   until: service_up.status == 200

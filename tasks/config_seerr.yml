@@ -95,7 +95,7 @@
 #         - { name: "Sonarr", url: "http://sonarr:{{ homeflix_sonarr_port }}", apiKey: "API_KEY", type: "sonarr" }
 #         - { name: "Radarr", url: "http://radarr:{{ homeflix_radarr_port }}", apiKey: "API_KEY", type: "radarr" }
 #   uri:
-#     url: "http://{{ ansible_host }}:{{ homeflix_seerr_port }}/api/server/{{ item.type }}"
+#     url: "http://localhost:{{ homeflix_seerr_port }}/api/server/{{ item.type }}"
 #     method: POST
 #     headers:
 #       Content-Type: "application/json"
@@ -117,7 +117,7 @@
     content: |
       Seerr (manual configuration)
       ====================================
-      1. Click here {% if homeflix_traefik_network is defined %} http://{{ homeflix_seerr_domain }} {% else %} http://{{ ansible_host }}:{{ homeflix_seerr_port }} {% endif %}
+      1. Click here {% if homeflix_traefik_network is defined %} http://{{ homeflix_seerr_domain }} {% else %} http://localhost:{{ homeflix_seerr_port }} {% endif %}
       2. Choose Jellyfin server
       3. Jellyfin URL: http://jellyfin or, if you use DNS, complete with your domain and check 'Use SSL' box
       4. Choose your credentials for admin user

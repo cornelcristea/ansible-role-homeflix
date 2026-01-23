@@ -49,7 +49,7 @@
   block:
     - name: Prowlarr | Get existing indexers
       uri:
-        url: "http://{{ ansible_host }}:{{ homeflix_prowlarr_port }}/api/v1/indexer"
+        url: "http://localhost:{{ homeflix_prowlarr_port }}/api/v1/indexer"
         method: GET
         headers:
           X-Api-Key: "{{ prowlarr_api_key }}"
@@ -60,7 +60,7 @@
       vars:
         existing_indexer_names: "{{ existing_indexers.json | map(attribute='name') | list }}"
       uri:
-        url: "http://{{ ansible_host }}:{{ homeflix_prowlarr_port }}/api/v1/indexer"
+        url: "http://localhost:{{ homeflix_prowlarr_port }}/api/v1/indexer"
         method: POST
         headers:
           X-Api-Key: "{{ prowlarr_api_key }}"
@@ -87,7 +87,7 @@
         indexers_to_keep: "{{ homeflix_prowlarr_indexers | map(attribute='name') | list }}"
         indexers_to_delete: "{{ existing_indexers.json | rejectattr('name', 'in', indexers_to_keep) | list }}"
       uri:
-        url: "http://{{ ansible_host }}:{{ homeflix_prowlarr_port }}/api/v1/indexer/{{ item.id }}"
+        url: "http://localhost:{{ homeflix_prowlarr_port }}/api/v1/indexer/{{ item.id }}"
         method: DELETE
         headers:
           X-Api-Key: "{{ prowlarr_api_key }}"
@@ -101,7 +101,7 @@
   block:
     - name: Prowlarr | Get existing applications
       uri:
-        url: "http://{{ ansible_host }}:{{ homeflix_prowlarr_port }}/api/v1/applications"
+        url: "http://localhost:{{ homeflix_prowlarr_port }}/api/v1/applications"
         method: GET
         headers:
           X-Api-Key: "{{ prowlarr_api_key }}"
@@ -123,7 +123,7 @@
       vars:
         radarr_exists: "{{ existing_apps.json | selectattr('name', 'equalto', 'Radarr') | list | length > 0 }}"
       uri:
-        url: "http://{{ ansible_host }}:{{ homeflix_prowlarr_port }}/api/v1/applications"
+        url: "http://localhost:{{ homeflix_prowlarr_port }}/api/v1/applications"
         method: POST
         headers:
           X-Api-Key: "{{ prowlarr_api_key }}"
@@ -161,7 +161,7 @@
       vars:
         sonarr_exists: "{{ existing_apps.json | selectattr('name', 'equalto', 'Sonarr') | list | length > 0 }}"
       uri:
-        url: "http://{{ ansible_host }}:{{ homeflix_prowlarr_port }}/api/v1/applications"
+        url: "http://localhost:{{ homeflix_prowlarr_port }}/api/v1/applications"
         method: POST
         headers:
           X-Api-Key: "{{ prowlarr_api_key }}"
