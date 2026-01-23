@@ -7,7 +7,7 @@ homeflix_timezone: Europe/Bucharest
 # this requires traefik role/app to be deployed first
 # homeflix_traefik_network: traefik_proxy
 
-# if traefik is used, update with your own domains or dns
+# if traefik is used, update with your own domain or dns
 homeflix_jellyfin_domain: localhost
 
 homeflix_jellyfin_server_name: HomeFlix
