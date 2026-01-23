@@ -26,12 +26,11 @@ services:
     labels:
 {% for label in service.labels %}
       - "{{ label }}"
-{% endfor %}   
-{% endif -%} 
+{% endfor %}
 {% endif -%}
-
+{% endif -%}
 {% if service.ports is defined and service.ports | length > 0
-   and not (homeflix_traefik_network is defined and service.name in != "jellyfin") %}
+    and not ( homeflix_traefik_network is defined and service.name == "jellyfin" ) %}
     ports:
 {% for port in service.ports %}
       - "{{ port }}"
@@ -45,4 +44,3 @@ networks:
   {{ homeflix_traefik_network }}:
     external: true
 {% endif -%}
-
