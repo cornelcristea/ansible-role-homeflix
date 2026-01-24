@@ -49,6 +49,13 @@ homeflix_prowlarr_indexers:
       baseUrl: https://limetorrents.proxyninja.org
       definitionFile: limetorrents
       tags: [1]
+  - name: TorrentGalaxyClone
+    implementation: Cardigann
+    config_contract: CardigannSettings
+    fields:
+      baseUrl: https://torrentgalaxy.info/
+      definitionFile: torrentgalaxyclone
+    tags: [1]
   - name: The Pirate Bay
     implementation: Cardigann
     config_contract: CardigannSettings
