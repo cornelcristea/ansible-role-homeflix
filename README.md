@@ -86,8 +86,7 @@ Prowlarr (Indexers) --> Flaresolverr (Cloudflare bypass)
 - hosts: servers
   vars:
     homeflix_timezone: UTC
-    homeflix_jellyfin_domain: mediaserver.example.com
-    homeflix_jellyfin_server_name: MediaServer
+    homeflix_jellyfin_server_name: HomeFlix
   roles:
     - homeflix
 ```
@@ -96,12 +95,17 @@ Prowlarr (Indexers) --> Flaresolverr (Cloudflare bypass)
 
 When running the playbook to deploy the Homeflix services, specific tags can be used to perform targeted actions.
 
-| Tag | Description |
+| Name | Description |
 |-----|-------------|
 | `update_docker_compose` | Update docker-compose file and redeploy services |
 | `update_bazarr` | Update Bazarr service |
 | `update_jellyfin` | Update Jellyfin service |
+| `update_jellyfin_libraries` | Update Jellyfin media libraries (scan for new/removed media) |
+| `update_jellyfin_plugins` | Download and install Jellyfin plugins |
+| `update_jellyfin_server_name` | Update the Jellyfin server name in its configuration |
+| `update_jellyfin_users` | Update Jellyfin user accounts |
 | `update_prowlarr` | Update Prowlarr service |
+| `update_prowlarr_indexers` | Update Prowlarr indexers (RSS/automation sources) |
 | `update_qbittorrent` | Update qBittorrent service |
 | `update_radarr` | Update Radarr service |
 | `update_recyclarr` | Update Recyclarr service |
