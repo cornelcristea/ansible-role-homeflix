@@ -149,6 +149,8 @@
       loop_control:
         label: "{{ item.username }}"
       when: (user_policy.IsHidden | default(false)) != (user_policy.IsAdministrator | default(false))
+  tags:
+    - update_jellyfin_users
 
 # NOTE:
 # library location fields in not reconized via API request (it has to be added manually from Web UI)
@@ -194,81 +196,44 @@
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
         status_code: 204
         follow_redirects: all
-
+  tags:
+    - update_jellyfin_libraries
+    
 - name: block - Manage plugins tasks
   block:
-    - name: Jellyfin | Get installed plugins
-      uri:
-        url: "http://localhost:{{ homeflix_jellyfin_port }}/Plugins"
-        method: GET
-        headers:
-          X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
-          Accept: "application/json"
-        return_content: true
-      register: installed_plugins
-
-    - name: Jellyfin | Search for host plugins file
-      stat:
-        path: "{{ inventory_dir }}/host_vars/{{ inventory_hostname }}/plugins.txt"
-      register: plugins_file_host
-
-    - name: Jellyfin | Determine the plugins file path
-      set_fact:
-        plugins_file_path: >-
-          {{ (plugins_file_host.stat.exists
-            | ternary(
-              inventory_dir ~ '/host_vars/' ~ inventory_hostname ~ '/plugins.txt',
-              role_path ~ '/files/plugins.txt')
-            )
-          }}
-
-    - name: Jellyfin | Set facts for plugins
-      set_fact:
-        plugins_file_content: "{{ lookup('file', plugins_file_path).splitlines() }}"
-        plugins_to_install: "{{ lookup('file', plugins_file_path).splitlines() | map('basename') | map('regex_replace', '\\.zip$', '') | list }}"
-        installed_plugins_names: "{{ installed_plugins.json | map(attribute='Name') | list }}"
-        plugins_dir: "{{ homeflix_apps_volume }}/jellyfin/data/plugins"
-
-    - name: Jellyfin | Check plugins folder
-      find:
-        paths: "{{ plugins_dir }}"
-        recurse: false
-      register: plugin_items
-
     - name: Jellyfin | Download plugins
       get_url:
-        url: "{{ item }}"
-        dest: "/tmp/{{ item | basename }}"
+        url: "{{ item.src }}"
+        dest: "/tmp/{{ item.src | basename }}"
       register: download_plugins
-      loop: "{{ plugins_file_content }}"
+      loop: "{{ homeflix_jellyfin_plugins }}"
       loop_control:
-        label: "{{ item | basename }}"
-      when: "(item | basename | regex_replace('\\.zip$', '')) not in installed_plugins_names"
+        label: "{{ item.name }}"
 
     - name: Jellyfin | Create plugins directory
       file:
-        path: "{{ plugins_dir }}/{{ item.item | basename | regex_replace('\\.zip$', '') }}"
+        path: "{{ homeflix_apps_volume }}/jellyfin/data/plugins/{{ item.name }}"
         state: directory
         owner: 1000
         group: 1000
         mode: 0755
-      loop: "{{ download_plugins.results }}"
+      loop: "{{ homeflix_jellyfin_plugins }}"
       loop_control:
-        label: "{{ item.item | basename | regex_replace('\\.zip$', '') }}"
+        label: "{{ item.name }}"
 
     - name: Jellyfin | Install plugins
       unarchive:
-        src: "/tmp/{{ item.item | basename }}"
-        dest: "{{ plugins_dir }}/{{ item.item | basename | regex_replace('\\.zip$', '') }}"
+        src: "/tmp/{{ item.src | basename }}"
+        dest: "{{ homeflix_apps_volume }}/jellyfin/data/plugins/{{ item.name }}"
         remote_src: true
         owner: 1000
         group: 1000
         mode: 0755
-        creates: "{{ plugins_dir }}/{{ item.item | basename | regex_replace('\\.zip$', '') }}/plugin.json"
+        creates: "{{ homeflix_apps_volume }}/jellyfin/data/plugins/{{ item.name }}/plugin.json"
       register: install_plugins
-      loop: "{{ download_plugins.results }}"
+      loop: "{{ homeflix_jellyfin_plugins }}"
       loop_control:
-        label: "{{ item.item | basename | regex_replace('\\.zip$', '') }}"
+        label: "{{ item.name }}"
 
     - include_tasks: common/restart_service.yml
       vars:
@@ -286,3 +251,5 @@
       retries: 30
       delay: 5
       when: install_plugins.changed
+  tags:
+    - update_jellyfin_plugins

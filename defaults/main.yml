@@ -1,19 +1,18 @@
 ---
 # defaults file for homeflix
 
-########################################################################
 # default password for qbittorrent
 # after deploy, change ONLY the password and save it to your host vars as ecrypted
 homeflix_qbittorrent_password: adminadmin
-########################################################################
+
 # default api key for bazarr
 # after deploy, generate a new one and save it to your host vars as ecrypted
 homeflix_bazarr_api_key: 463482c2b8172db0ba2736f6a0b3dbc7
-########################################################################
+
 # default api key for jellyfin
 # after deploy, generate a new one and save it to your host vars as ecrypted
 homeflix_jellyfin_api_key: fae9789ce96847aeb834dec33c67ee8e
-########################################################################
+
 # requires the traefik role to be deployed first
 # https://galaxy.ansible.com/ui/standalone/roles/cornelcristea/traefik
 # you need a real domain (free or paid) for public access
@@ -21,7 +20,6 @@ homeflix_jellyfin_api_key: fae9789ce96847aeb834dec33c67ee8e
 # makes jellyfin accessible from smart TVs or other external devices
 # if using tailscale for private access, this is not needed
 homeflix_host_domain: homeflix.example.com
-########################################################################
 
 homeflix_timezone: Europe/Bucharest
 
@@ -38,6 +36,10 @@ homeflix_jellyfin_libraries:
   - name: "TV Shows"
     collection_type: "tvshows"
     location: "{{ homeflix_data_volume }}/tv"
+
+homeflix_jellyfin_plugins:
+  - name: SkinManager
+    src: https://github.com/danieladov/jellyfin-plugin-skin-manager/releases/download/2.0.2/Jellyfin-Plugin-SkinManager.zip
 
 homeflix_prowlarr_indexers:
   - name: 1337x
