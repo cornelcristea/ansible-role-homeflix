@@ -96,6 +96,8 @@
       loop_control:
         label: "{{ item.name }}"
       when: indexers_to_delete | length > 0
+  tags:
+    - update_prowlarr_indexers
 
 - name: block - Manage applications
   block:
