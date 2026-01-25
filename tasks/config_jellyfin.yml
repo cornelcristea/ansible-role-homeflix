@@ -201,11 +201,20 @@
 
 - name: block - Manage plugins tasks
   block:
+    - name: Jellyfin | Get installed plugins
+      uri:
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Plugins"
+        method: GET
+        headers:
+          X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
+          Accept: "application/json"
+        return_content: true
+      register: installed_plugins
+
     - name: Jellyfin | Download plugins
       get_url:
         url: "{{ item.src }}"
         dest: "/tmp/{{ item.src | basename }}"
-      register: download_plugins
       loop: "{{ homeflix_jellyfin_plugins }}"
       loop_control:
         label: "{{ item.name }}"
@@ -235,10 +244,24 @@
       loop_control:
         label: "{{ item.name }}"
 
+    - name: Jellyfin | Uninstall plugins
+      vars:
+        installed_plugin_list: "{{ installed_plugins.json | map(attribute='Name') | list }}"
+        desired_plugins: "{{ homeflix_jellyfin_plugins | map(attribute='name') | list }}"
+        default_plugins: [AudioDB, MusicBrainz, OMDb, Studio Images, TMDb]
+        removable_plugins: "{{ installed_plugin_list | difference(desired_plugins + default_plugins) }}"
+      file:
+        path: "{{ homeflix_apps_volume }}/jellyfin/data/plugins/{{ item }}"
+        state: absent
+      register: uninstall_plugins
+      loop: "{{ removable_plugins }}"
+      loop_control:
+        label: "{{ item }}"
+
     - include_tasks: common/restart_service.yml
       vars:
         service_name: jellyfin
-      when: install_plugins.changed
+      when: install_plugins.changed or uninstall_plugins.changed
 
     - name: Jellyfin | Wait for service to be up
       uri:
@@ -250,6 +273,6 @@
       until: jellyfin_up.status == 200
       retries: 30
       delay: 5
-      when: install_plugins.changed
+      when: install_plugins.changed or uninstall_plugins.changed
   tags:
     - update_jellyfin_plugins
