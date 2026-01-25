@@ -1,7 +1,7 @@
 ---
 - name: Jellyfin | Wait until configuration is completed
   uri:
-    url: "http://{{ homeflix_jellyfin_host }}/System/Info/Public"
+    url: "http://localhost:{{ homeflix_jellyfin_port }}/System/Info/Public"
     method: GET
   register: jellyfin_up
   until: jellyfin_up.status == 200
@@ -44,7 +44,7 @@
 
     - name: Jellyfin | Wait until service is up
       uri:
-        url: "http://{{ homeflix_jellyfin_host }}/System/Info/Public"
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/System/Info/Public"
         method: GET
       register: jellyfin_up
       until: jellyfin_up.status == 200
@@ -56,7 +56,7 @@
   block:
     - name: Jellyfin | Get current server name
       uri:
-        url: "http://{{ homeflix_jellyfin_host }}/Startup/Configuration"
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Startup/Configuration"
         method: GET
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
@@ -65,7 +65,7 @@
 
     - name: Jellyfin | Update server name
       uri:
-        url: "http://{{ homeflix_jellyfin_host }}/Startup/Configuration"
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Startup/Configuration"
         method: POST
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
@@ -83,7 +83,7 @@
   block:
     - name: Jellyfin | Get existing users
       uri:
-        url: "http://{{ homeflix_jellyfin_host }}/Users"
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Users"
         method: GET
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
@@ -95,7 +95,7 @@
       vars:
         existing_users_names: "{{ existing_users.json | map(attribute='Name') | list }}"
       uri:
-        url: "http://{{ homeflix_jellyfin_host }}/Users/New"
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Users/New"
         method: POST
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
@@ -116,7 +116,7 @@
         users_to_keep: "{{ (homeflix_jellyfin_users | map(attribute='username') | list) + ['admin'] }}"
         users_to_delete: "{{ existing_users.json | rejectattr('Name', 'in', users_to_keep) | list }}"
       uri:
-        url: "http://{{ homeflix_jellyfin_host }}/Users/{{ item.Id }}"
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Users/{{ item.Id }}"
         method: DELETE
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
@@ -133,7 +133,7 @@
         user_id: "{{ user_info.Id }}"
         user_policy: "{{ user_info.Policy | default({}) }}"
       uri:
-        url: "http://{{ homeflix_jellyfin_host }}/Users/{{ user_id }}/Policy"
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Users/{{ user_id }}/Policy"
         method: POST
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
@@ -158,7 +158,7 @@
   block:
     - name: Jellyfin | Get existing libraries
       uri:
-        url: "http://{{ homeflix_jellyfin_host }}/Library/VirtualFolders"
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Library/VirtualFolders"
         method: GET
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
@@ -168,7 +168,7 @@
 
     - name: Jellyfin | Create libraries
       uri:
-        url: "http://{{ homeflix_jellyfin_host }}/Library/VirtualFolders?name={{ item.name | urlencode }}&CollectionType={{ item.collection_type }}"
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Library/VirtualFolders?name={{ item.name | urlencode }}&CollectionType={{ item.collection_type }}"
         method: POST
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
@@ -188,7 +188,7 @@
 
     - name: Jellyfin | Refresh libraries
       uri:
-        url: "http://{{ homeflix_jellyfin_host }}/Library/Refresh"
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Library/Refresh"
         method: POST
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
@@ -199,7 +199,7 @@
   block:
     - name: Jellyfin | Get installed plugins
       uri:
-        url: "http://{{ homeflix_jellyfin_host }}/Plugins"
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Plugins"
         method: GET
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
@@ -277,7 +277,7 @@
 
     - name: Jellyfin | Wait for service to be up
       uri:
-        url: "http://{{ homeflix_jellyfin_host }}/Startup/Configuration"
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Startup/Configuration"
         method: GET
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"

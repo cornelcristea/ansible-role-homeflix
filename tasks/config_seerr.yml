@@ -37,7 +37,7 @@
 
 #     - name: Seerr | Get jellyfin system info
 #       uri:
-#         url: "http://{{ homeflix_jellyfin_host }}/System/Info"
+#         url: "http://localhost:{{ homeflix_jellyfin_port }}/System/Info"
 #         headers:
 #           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
 #         return_content: true
@@ -45,7 +45,7 @@
 
 #     - name: Seerr | Get jellyfin libraries
 #       uri:
-#         url: "http://{{ homeflix_jellyfin_host }}/Library/VirtualFolders"
+#         url: "http://localhost:{{ homeflix_jellyfin_port }}/Library/VirtualFolders"
 #         method: GET
 #         headers:
 #           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
