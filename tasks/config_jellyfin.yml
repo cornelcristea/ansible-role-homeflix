@@ -198,7 +198,7 @@
         follow_redirects: all
   tags:
     - update_jellyfin_libraries
-    
+
 - name: block - Manage plugins tasks
   block:
     - name: Jellyfin | Download plugins

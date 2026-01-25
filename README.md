@@ -1,4 +1,4 @@
-# Ansible Role: Homeflix
+# Ansible Role: HomeFlix
 
 ## Table of Contents
 
@@ -54,7 +54,6 @@ Prowlarr (Indexers) --> Flaresolverr (Cloudflare bypass)
 - Ansible ≥ 2.14
 - Traefik (optional for Reverse Proxy)
 
-
 ## Variables
 
 | Name | Description | Default |
@@ -69,7 +68,6 @@ Prowlarr (Indexers) --> Flaresolverr (Cloudflare bypass)
 | `homeflix_bazarr_api_key` | Default Bazarr API key | See defaults |
 | `homeflix_jellyfin_api_key` | Default Jellyfin API key | See defaults |
 
-
 ## Notes
 
 - Traefik reverse proxy network is optional — enable by uncommenting `homeflix_traefik_network` variable.  
@@ -79,8 +77,7 @@ Prowlarr (Indexers) --> Flaresolverr (Cloudflare bypass)
 - Make sure **ports are available** and **media folders exist** before deployment.  
 - <b>After deployment, update API keys and passwords to secure values.</b>
 
-
-## Example Playbook
+## Playbook example
 
 ```yaml
 - hosts: servers
@@ -112,7 +109,6 @@ When running the playbook to deploy the Homeflix services, specific tags can be 
 | `update_seerr` | Update Seer service |
 | `update_sonarr` | Update Sonarr service |
 
-
 ## Knowing issues
 
 - For Radarr, the `Rename movies` option cannot be enabled via API and it has to be enabled manually from Web UI
@@ -121,8 +117,7 @@ When running the playbook to deploy the Homeflix services, specific tags can be 
 - Seerr cannot be configured using API.
 - <b>The role does not contain any VPN</b>
 
-
-## How to Contribute
+## How to contribute
 
 We welcome contributions! Here’s how you can help improve this role:
 
