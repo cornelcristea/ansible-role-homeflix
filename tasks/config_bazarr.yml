@@ -1,10 +1,8 @@
 ---
-- name: Bazarr | Set facts for service
-  set_fact:
-    service_name: bazarr
+- name: Bazarr | Include task to wait for service
+  vars:
     service_port: "{{ homeflix_bazarr_port }}"
-
-- include_tasks: common/wait_for_service.yml
+  include_tasks: wait_for_service.yml
 
 - name: Bazarr | Check configuration
   become: true
@@ -18,7 +16,10 @@
 
 - name: block - First run tasks
   block:
-    - include_tasks: common/stop_service.yml
+    - name: Bazarr | Include task to stop the service
+      vars:
+        service_name: bazarr
+      include_tasks: stop_service.yml
 
     - name: Bazarr | Check Sonarr configuration
       become: true
@@ -51,9 +52,15 @@
         group: 1000
         mode: 0755
 
-    - include_tasks: common/restart_service.yml
+    - name: Bazarr | Include task to restart the service
+      vars:
+        service_name: bazarr
+      include_tasks: restart_service.yml
 
-    - include_tasks: common/wait_for_service.yml
+    - name: Bazarr | Include task to wait for service
+      vars:
+        service_port: "{{ homeflix_bazarr_port }}"
+      include_tasks: wait_for_service.yml
   when: bazarr_first_run
 # TO DO:
 # Add language profile within API

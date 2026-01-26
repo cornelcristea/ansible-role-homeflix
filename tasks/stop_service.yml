@@ -1,0 +1,9 @@
+---
+- name: Stop the service
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: "{{ homeflix_apps_volume }}"
+    state: stopped
+    services:
+      - "{{ service_name }}"
+    build: never
