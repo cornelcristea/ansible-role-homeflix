@@ -73,8 +73,8 @@
           value: "admin"
         - name: password
           value: "{{ homeflix_qbittorrent_password }}"
-        - name: "{{ category_field }}"
-          value: "{{ category_value }}"
+        - name: "{{ 'tvCategory' if service_nmae == 'sonarr' else 'movieCategory' }}"
+          value: "{{ 'tv' if service_nmae == 'sonarr' else 'movies' }}"
       configContract: "QBittorrentSettings"
       tags: []
     status_code: 201

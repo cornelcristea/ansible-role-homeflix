@@ -24,16 +24,12 @@
   vars:
     service_name: radarr
     service_port: "{{ homeflix_radarr_port }}"
-    category_field: movieCategory
-    category_value: movies
   tags: update_radarr
 
 - import_tasks: config_radarr_sonarr.yml
   vars:
     service_name: sonarr
     service_port: "{{ homeflix_sonarr_port }}"
-    category_field: tvCategory
-    category_value: tv
   tags: update_sonarr
 
 - import_tasks: config_prowlarr.yml
