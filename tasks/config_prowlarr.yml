@@ -87,7 +87,7 @@
 
     - name: Prowlarr | Delete indexers
       vars:
-        indexers_to_keep: "{{ ( homeflix_prowlarr_indexers + homeflix_prowlarr_indexers_extra ) | map(attribute='name') | list }}"
+        indexers_to_keep: "{{ (homeflix_prowlarr_indexers + homeflix_prowlarr_indexers_extra) | map(attribute='name') | list }}"
         indexers_to_delete: "{{ existing_indexers.json | rejectattr('name', 'in', indexers_to_keep) | list }}"
       uri:
         url: "http://localhost:{{ homeflix_prowlarr_port }}/api/v1/indexer/{{ item.id }}"

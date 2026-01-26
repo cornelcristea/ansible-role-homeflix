@@ -197,7 +197,7 @@
         label: "{{ item.name }}"
       when: >
         existing_libraries.json | selectattr('Name', 'equalto', item.name) | list | length == 0
-  
+
     - name: Jellyfin | Refresh libraries
       uri:
         url: "http://localhost:{{ homeflix_jellyfin_port }}/Library/Refresh"
