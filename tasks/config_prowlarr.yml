@@ -45,7 +45,7 @@
         service_port: "{{ homeflix_prowlarr_port }}"
   when: prowlarr_first_run
 
-- name: block - Manage indexers
+- name: block - Manage indexers tasks
   block:
     - name: Prowlarr | Get existing indexers
       uri:
@@ -59,6 +59,7 @@
     - name: Prowlarr | Add indexers
       vars:
         existing_indexer_names: "{{ existing_indexers.json | map(attribute='name') | list }}"
+        prowlarr_indexers: "{{ homeflix_prowlarr_indexers + homeflix_prowlarr_indexers_extra }}"
       uri:
         url: "http://localhost:{{ homeflix_prowlarr_port }}/api/v1/indexer"
         method: POST
@@ -71,12 +72,12 @@
           enable: true
           implementation: "{{ item.implementation }}"
           configContract: "{{ item.config_contract }}"
-          appProfileId: 1
+          appProfileId: "{{ item.app_profile_ids | default(1) }}"
           priority: "{{ item.priority | default(25) }}"
           fields: "{{ item.fields | dict2items(key_name='name', value_name='value') }}"
           tags: "{{ item.tags | default([]) }}"
         status_code: 201
-      loop: "{{ homeflix_prowlarr_indexers }}"
+      loop: "{{ prowlarr_indexers }}"
       loop_control:
         label: "{{ item.name }}"
       ignore_errors: true
@@ -84,7 +85,7 @@
 
     - name: Prowlarr | Delete indexers
       vars:
-        indexers_to_keep: "{{ homeflix_prowlarr_indexers | map(attribute='name') | list }}"
+        indexers_to_keep: "{{ ( homeflix_prowlarr_indexers + homeflix_prowlarr_indexers_extra ) | map(attribute='name') | list }}"
         indexers_to_delete: "{{ existing_indexers.json | rejectattr('name', 'in', indexers_to_keep) | list }}"
       uri:
         url: "http://localhost:{{ homeflix_prowlarr_port }}/api/v1/indexer/{{ item.id }}"
@@ -99,7 +100,7 @@
   tags:
     - update_prowlarr_indexers
 
-- name: block - Manage applications
+- name: block - Manage applications tasks
   block:
     - name: Prowlarr | Get existing applications
       uri:
