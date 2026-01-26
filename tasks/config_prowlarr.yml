@@ -16,10 +16,11 @@
     prowlarr_first_run: "{{ ('<AuthenticationMethod>None</AuthenticationMethod>' in (config_xml.content | b64decode | string)) }}"
 
 - name: block - First run tasks
+  vars:
+    service_name: prowlarr
+    service_port: "{{ homeflix_prowlarr_port }}"
   block:
     - include_tasks: common/stop_service.yml
-      vars:
-        service_name: prowlarr
 
     - name: Prowlarr | Copy database
       copy:
@@ -36,13 +37,8 @@
         replace: "<AuthenticationMethod>Forms</AuthenticationMethod>"
 
     - include_tasks: common/restart_service.yml
-      vars:
-        service_name: prowlarr
 
     - include_tasks: common/wait_for_service.yml
-      vars:
-        service_name: prowlarr
-        service_port: "{{ homeflix_prowlarr_port }}"
   when: prowlarr_first_run
 
 - name: block - Manage indexers tasks

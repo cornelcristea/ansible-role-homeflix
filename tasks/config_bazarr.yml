@@ -15,10 +15,11 @@
     bazarr_first_run: "{{ (config_yaml.content | b64decode | from_yaml).auth.type is none }}"
 
 - name: block - First run tasks
+  vars:
+    service_name: bazarr
+    service_port: "{{ homeflix_bazarr_port }}"
   block:
     - include_tasks: common/stop_service.yml
-      vars:
-        service_name: bazarr
 
     - name: Bazarr | Check Sonarr configuration
       become: true
@@ -52,13 +53,8 @@
         mode: 0755
 
     - include_tasks: common/restart_service.yml
-      vars:
-        service_name: bazarr
 
     - include_tasks: common/wait_for_service.yml
-      vars:
-        service_name: bazarr
-        service_port: "{{ homeflix_bazarr_port }}"
   when: bazarr_first_run
 # TO DO:
 # Add language profile within API

@@ -10,10 +10,11 @@
     qbittorrent_first_run: "{{ 'Password_PBKDF2' not in (conf_file.content | b64decode) }}"
 
 - name: block - First run tasks
+  vars:
+    service_name: qbittorrent
+    service_port: "{{ homeflix_qbittorrent_port }}"
   block:
     - include_tasks: common/stop_service.yml
-      vars:
-        service_name: qbittorrent
 
     - name: qBittorrent | Generate config file
       vars:
@@ -31,11 +32,7 @@
         label: "{{ item | basename | splitext | first }}"
 
     - include_tasks: common/restart_service.yml
-      vars:
-        service_name: qbittorrent
 
     - include_tasks: common/wait_for_service.yml
-      vars:
-        service_name: qbittorrent
-        service_port: "{{ homeflix_qbittorrent_port }}"
+
   when: qbittorrent_first_run

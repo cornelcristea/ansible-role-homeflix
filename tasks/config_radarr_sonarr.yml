@@ -34,7 +34,6 @@
     - include_tasks: common/restart_service.yml
 
     - include_tasks: common/wait_for_service.yml
-
   when: service_first_run
 
 - name: "{{ service_name | capitalize }} | Get existing download clients"

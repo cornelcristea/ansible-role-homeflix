@@ -15,10 +15,11 @@
     jellyfin_first_run: "{{ ('<IsStartupWizardCompleted>false</IsStartupWizardCompleted>' in (system_xml.content | b64decode | string)) }}"
 
 - name: block - First run tasks
+  vars:
+    service_name: jellyfin
+    service_port: "{{ homeflix_jellyfin_port }}"
   block:
     - include_tasks: common/stop_service.yml
-      vars:
-        service_name: jellyfin
 
     - name: Jellyfin | Remove initial installation
       file:
@@ -35,16 +36,11 @@
         mode: 0755
 
     - include_tasks: common/restart_service.yml
-      vars:
-        service_name: jellyfin
 
     - include_tasks: common/wait_for_service.yml
-      vars:
-        service_name: jellyfin
-        service_port: "{{ homeflix_jellyfin_port }}"
   when: jellyfin_first_run
 
-- name: block - Manage server name
+- name: block - Manage server name tasks
   block:
     - name: Jellyfin | Get current server name
       uri:
@@ -144,13 +140,13 @@
   tags:
     - update_jellyfin_users
 
-# NOTE:
-# library location fields in not reconized via API request:
-#   - for new libraries, it has to be added manually from Web UI
-#   - for movies and tv shows, location is present in database
-# TO DO:
-# delete libraries with Ansible
 - name: block - Manage libraries tasks
+  # NOTE:
+  # library location fields in not reconized via API request
+  # for new libraries, it has to be added manually from Web UI
+  # for movies and tv shows, location is present in database
+  # TO DO:
+  # delete libraries with Ansible
   block:
     - name: Jellyfin | Get existing libraries
       uri:
@@ -183,7 +179,7 @@
         label: "{{ item.name }}"
       when: >
         existing_libraries.json | selectattr('Name', 'equalto', item.name) | list | length == 0
-
+  
     - name: Jellyfin | Refresh libraries
       uri:
         url: "http://localhost:{{ homeflix_jellyfin_port }}/Library/Refresh"
