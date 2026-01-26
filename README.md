@@ -127,8 +127,8 @@ We welcome contributions! Here’s how you can help improve this role:
 **2. Clone your fork locally**
 
 ```bash
-git clone https://github.com/cornelcristea/ansible-homeflix.git
-cd ansible-homeflix
+git clone https://github.com/cornelcristea/ansible-role-homeflix.git
+cd ansible-role-homeflix
 ```
 
 **3. Create a new branch**
