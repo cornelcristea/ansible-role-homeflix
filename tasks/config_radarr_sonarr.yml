@@ -36,7 +36,7 @@
     - name: "{{ service_name | capitalize }} | Include task to restart for service"
       include_tasks: restart_service.yml
 
-    - name: "{{ service_name | capitalize }} | Include task to wait for service"
+    - name: "{{ service_name | capitalize }} | Include task to wait for service"  
       include_tasks: wait_for_service.yml
   when: service_first_run
 
