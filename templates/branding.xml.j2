@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <BrandingOptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 {% if homeflix_jellyfin_login_disclaimer %}
-  <LoginDisclaimer>
-    {{ homeflix_jellyfin_login_disclaimer }}
-  </LoginDisclaimer>
+  <LoginDisclaimer>{{ homeflix_jellyfin_login_disclaimer | replace('\n', ' ') | trim }}</LoginDisclaimer>
 {% else %}
   <LoginDisclaimer />
 {% endif %}
 {% if homeflix_jellyfin_custom_css %}
-  <CustomCss>
-    {{ homeflix_jellyfin_custom_css }}
-  </CustomCss>
+  <CustomCss>{{ homeflix_jellyfin_custom_css | trim }}</CustomCss>
 {% else %}
   <CustomCss />
 {% endif %}
-  <SplashscreenEnabled>{{ homeflix_jellyfin_splash_screen_enabled }}</SplashscreenEnabled>
+  <SplashscreenEnabled>{{ homeflix_jellyfin_splash_screen_enabled | bool | lower }}</SplashscreenEnabled>
+{% if homeflix_jellyfin_splash_screen_enabled %}
+  <SplashscreenLocation>/config/data/data/splashscreen-upload.jpg</SplashscreenLocation>
+{% endif %}
 </BrandingOptions>
-

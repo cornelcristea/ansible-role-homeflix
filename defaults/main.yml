@@ -1,6 +1,8 @@
 ---
 # defaults file for homeflix
 
+homeflix_timezone: Europe/Bucharest
+
 # default password for qbittorrent
 # after deploy, change ONLY the password and save it to your host vars as ecrypted
 homeflix_qbittorrent_password: adminadmin
@@ -21,22 +23,26 @@ homeflix_jellyfin_api_key: fae9789ce96847aeb834dec33c67ee8e
 # if using tailscale for private access, this is not needed
 homeflix_host_domain: homeflix.example.com
 
-homeflix_timezone: Europe/Bucharest
+# homeflix_jellyfin_plugins:
+#   - name: Example
+#     src: https://example.com/plugins/file.zip
+homeflix_jellyfin_plugins: []
 
-# jellyfin variables
+# homeflix_jellyfin_custom_css: |
+#   @import(url/to/file.css);
+#   :root {
+#     --bold: 18px
+#   }
+homeflix_jellyfin_custom_css: []
+
+homeflix_jellyfin_splash_screen_enabled: false
+
 homeflix_jellyfin_server_name: HomeFlix
 
 homeflix_jellyfin_users:
   - username: homeflix
     password: StrongPass123! # encrypsted passwords are recommended
 
-homeflix_jellyfin_plugins:
-  - name: SkinManager
-    src: https://github.com/danieladov/jellyfin-plugin-skin-manager/releases/download/2.0.2/Jellyfin-Plugin-SkinManager.zip
-
-homeflix_jellyfin_splash_screen_enabled: false
-
-homeflix_jellyfin_custom_css: []
 
 homeflix_jellyfin_libraries_extra: []
 

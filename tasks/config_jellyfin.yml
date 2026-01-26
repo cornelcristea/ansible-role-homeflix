@@ -1,10 +1,14 @@
 ---
-- name: Jellyfin | Set facts for service
-  set_fact:
-    service_name: jellyfin
-    service_port: "{{ homeflix_jellyfin_port }}"
-
-- include_tasks: common/wait_for_service.yml
+- name: Jellyfin | Wait until configuration is loaded
+  uri:
+    url: "http://localhost:{{ homeflix_jellyfin_port }}/Startup/Configuration"
+    method: GET
+    headers:
+      X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
+  register: jellyfin_up
+  until: jellyfin_up.status == 200
+  retries: 30
+  delay: 5
 
 - name: Jellyfin | Check system configuration
   become: true
@@ -18,7 +22,10 @@
 
 - name: block - First run tasks
   block:
-    - include_tasks: common/stop_service.yml
+    - name: Jellyfin | Include task to stop the service
+      vars:
+        service_name: jellyfin
+      include_tasks: stop_service.yml
 
     - name: Jellyfin | Remove initial installation
       file:
@@ -34,11 +41,21 @@
         group: 1000
         mode: 0755
 
-    - name: Jellyfin | Include task
-      include_tasks: common/restart_service.yml
+    - name: Jellyfin | Include task to restart the service
+      vars:
+        service_name: jellyfin
+      include_tasks: restart_service.yml
 
-    - name: Jellyfin | Include task
-      include_tasks: common/wait_for_service.yml
+    - name: Jellyfin | Wait until configuration is loaded
+      uri:
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Startup/Configuration"
+        method: GET
+        headers:
+          X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
+      register: jellyfin_up
+      until: jellyfin_up.status == 200
+      retries: 30
+      delay: 5
   when: jellyfin_first_run
 
 - name: block - Manage server name tasks
@@ -253,39 +270,50 @@
   tags:
     - update_jellyfin_plugins
 
-- name: Jellyfin | Update branding
-  template:
-    src: branding.xml.j2
-    dest: "{{ homeflix_apps_volume }}/jellyfin/branding.xml"
-    owner: 1000
-    group: 1000
-    mode: 0644
-  register: branding_xml
+- name: block - Manage brading tasks
+  block:
+    - name: Jellyfin | Copy splash screen
+      copy:
+        src: "splash-screen.jpg"
+        dest: "{{ homeflix_apps_volume }}/jellyfin/data/data/splashscreen-upload.jpg"
+        owner: 1000
+        group: 1000
+        mode: 0644
+
+    - name: Jellyfin | Generate branding xml
+      template:
+        src: branding.xml.j2
+        dest: "{{ homeflix_apps_volume }}/jellyfin/branding.xml"
+        owner: 1000
+        group: 1000
+        mode: 0644
+      register: branding_xml
   tags:
     - update_jellyfin_branding
 
 # do not change position of the following tasks block
 - name: block - Restart container tasks
   block:
-    - include_tasks: common/restart_service.yml
+    - name: Jellyfin | Include task to restart the service
+      vars:
+        service_name: jellyfin
+      include_tasks: restart_service.yml
 
-    - include_tasks: common/wait_for_service.yml
+    - name: Jellyfin | Wait until configuration is loaded
+      uri:
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Startup/Configuration"
+        method: GET
+        headers:
+          X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
+      register: jellyfin_up
+      until: jellyfin_up.status == 200
+      retries: 30
+      delay: 5
   when: >
     ( branding_xml is defined and branding_xml.changed ) or
     ( uninstall_plugins is defined and uninstall_plugins.changed ) or
-    ( install_plugins is defined and install_plugins.changed )
+    ( install_plugins is defined and install_plugins.changed ) or
+    ( splash_screen is defined and splash_screen.changed )
   tags:
-    - update_jellyfin_branding
     - update_jellyfin_plugins
-
-    # - name: Jellyfin | Wait for service to be up
-    #   uri:
-    #     url: "http://localhost:{{ homeflix_jellyfin_port }}/Startup/Configuration"
-    #     method: GET
-    #     headers:
-    #       X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
-    #   register: jellyfin_up
-    #   until: jellyfin_up.status == 200
-    #   retries: 30
-    #   delay: 5
-    #   when: branding_xml.changed
+    - update_jellyfin_branding
