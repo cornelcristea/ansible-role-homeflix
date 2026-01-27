@@ -3,23 +3,21 @@
   vars:
     service_port: "{{ homeflix_prowlarr_port }}"
   include_tasks: wait_for_service.yml
-  tags:
-    - always
-
+ 
 - name: Prowlarr | Check configuration
   become: true
   slurp:
     src: "{{ homeflix_apps_volume }}/prowlarr/config.xml"
   register: config_xml
   tags:
-    - always
+    - update_prowlarr_indexers
 
 - name: Prowlarr | Determine first run
   set_fact:
     prowlarr_api_key: "{{ ((config_xml.content | b64decode) | regex_findall('<ApiKey>(.*?)</ApiKey>'))[0] }}"
     prowlarr_first_run: "{{ ('<AuthenticationMethod>None</AuthenticationMethod>' in (config_xml.content | b64decode | string)) }}"
   tags:
-    - always
+    - update_prowlarr_indexers
 
 - name: block - First run tasks
   block:
@@ -93,7 +91,7 @@
 
     - name: Prowlarr | Delete indexers
       vars:
-        indexers_to_keep: "{{ (homeflix_prowlarr_indexers + homeflix_prowlarr_indexers_extra) | map(attribute='name') | list }}"
+        indexers_to_keep: "{{ ( homeflix_prowlarr_indexers + homeflix_prowlarr_indexers_extra ) | map(attribute='name') | list }}"
         indexers_to_delete: "{{ existing_indexers.json | rejectattr('name', 'in', indexers_to_keep) | list }}"
       uri:
         url: "http://localhost:{{ homeflix_prowlarr_port }}/api/v1/indexer/{{ item.id }}"
