@@ -26,13 +26,13 @@ homeflix_jellyfin_api_key: fae9789ce96847aeb834dec33c67ee8e
 homeflix_jellyfin_host_domain: []
 
 # use ansible vault to encrypt the passwords
-# is_admin: make the user an admin (not mandatory, by default is false)
-# is_hidden: enable/disable login panel visibility (not mandatory, by default is false)
+# isAdmin: make the user an admin (false if not defined)
+# isHidden: enable/disable login panel visibility (true if not defined)
 homeflix_jellyfin_users:
   - username: homeflix
     password: pass123
-    is_admin: false
-    is_hidden: true
+    isAdmin: false
+    isHidden: false
 
 # homeflix_jellyfin_plugins:
 #   - name: Example
