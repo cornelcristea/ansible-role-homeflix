@@ -89,7 +89,7 @@
       ignore_errors: true
       when: item.name not in existing_indexer_names
 
-    - name: Prowlarr | Remove indexers
+    - name: Prowlarr | Delete indexers
       vars:
         indexers_to_keep: "{{ ( homeflix_prowlarr_indexers + homeflix_prowlarr_indexers_extra ) | map(attribute='name') | list }}"
         indexers_to_delete: "{{ existing_indexers.json | rejectattr('name', 'in', indexers_to_keep) | list }}"
