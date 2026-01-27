@@ -70,12 +70,8 @@ homeflix_jellyfin_login_disclaimer: |
   Deployed by Ansible @ cornelcristea.homeflix
 
 homeflix_jellyfin_libraries:
-  - name: Movies
-    collection_type: movies
-    path: /data/movies
-  - name: TV Shows
-    collection_type: tvshows
-    path: /data/tv
+  - { name: Movies, collection_type: movies, path: /data/movies }
+  - { name: TV Shows, collection_type: tvshows, path: /data/tv }
 
 homeflix_prowlarr_indexers:
   - name: 1337x
