@@ -117,3 +117,22 @@ homeflix_prowlarr_indexers:
     fields:
       baseUrl: https://showrss.info
       definitionFile: showrss
+  - name: isohunt2
+    implementation: Cardigann
+    configContract: CardigannSettings
+    fields:
+      baseUrl: https://isohunt.sh
+      definitionFile: isohunt2
+  - name: BitSearch
+    implementation: Cardigann
+    configContract: CardigannSettings
+    fields:
+      baseUrl: https://bitsearch.to
+      definitionFile: bitsearch
+  - name: ExtraTorrent.st
+    implementation: Cardigann
+    configContract: CardigannSettings
+    fields:
+      baseUrl: https://extratorrent.st
+      definitionFile: extratorrent-st
+    tags: [1]
