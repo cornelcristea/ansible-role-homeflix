@@ -76,10 +76,10 @@
         body:
           name: "{{ item.name }}"
           enable: true
-          implementation: "{{ item.implementation }}"
-          configContract: "{{ item.configContract }}"
-          appProfileId: "{{ item.appProfileId | default(1) }}"
-          priority: "{{ item.priority | default(25) }}"
+          implementation: "{{ item.get('implementation', 'Cardigann') }}"
+          configContract: "{{ item.get('configContract', 'CardigannSettings') }}"
+          appProfileId: 1
+          priority: 25
           fields: "{{ item.fields | dict2items(key_name='name', value_name='value') }}"
           tags: "{{ item.tags | default([]) }}"
         status_code: 201

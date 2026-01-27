@@ -79,59 +79,42 @@ homeflix_jellyfin_libraries:
 
 homeflix_prowlarr_indexers:
   - name: 1337x
-    implementation: Cardigann
-    configContract: CardigannSettings
-    tags: [1]
     fields:
       baseUrl: https://x1337x.eu
       definitionFile: 1337x
+    tags: [1]
   - name: EZTV
-    implementation: Cardigann
-    configContract: CardigannSettings
     fields:
       baseUrl: https://eztvx.to
       definitionFile: eztv
   - name: LimeTorrents
-    implementation: Cardigann
-    configContract: CardigannSettings
-    tags: [1]
     fields:
       baseUrl: https://limetorrents.proxyninja.org
       definitionFile: limetorrents
-  - name: TorrentGalaxyClone
-    implementation: Cardigann
-    configContract: CardigannSettings
     tags: [1]
+  - name: TorrentGalaxyClone
     fields:
       baseUrl: https://torrentgalaxy.info/
       definitionFile: torrentgalaxyclone
+    tags: [1]
   - name: The Pirate Bay
-    implementation: Cardigann
-    configContract: CardigannSettings
     fields:
       baseUrl: https://thepiratebay.zone
       definitionFile: thepiratebay
   - name: showRSS
-    implementation: Cardigann
-    configContract: CardigannSettings
     fields:
       baseUrl: https://showrss.info
       definitionFile: showrss
   - name: isohunt2
-    implementation: Cardigann
-    configContract: CardigannSettings
     fields:
       baseUrl: https://isohunt.sh
       definitionFile: isohunt2
+    tags: [1]
   - name: BitSearch
-    implementation: Cardigann
-    configContract: CardigannSettings
     fields:
       baseUrl: https://bitsearch.to
       definitionFile: bitsearch
   - name: ExtraTorrent.st
-    implementation: Cardigann
-    configContract: CardigannSettings
     fields:
       baseUrl: https://extratorrent.st
       definitionFile: extratorrent-st
