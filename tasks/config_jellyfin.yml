@@ -27,19 +27,33 @@
         service_name: jellyfin
       include_tasks: stop_service.yml
 
-    - name: Jellyfin | Remove initial installation
-      file:
-        path: "{{ homeflix_apps_volume }}/jellyfin"
-        state: absent
+    # - name: Jellyfin | Remove initial installation
+    #   file:
+    #     path: "{{ homeflix_apps_volume }}/jellyfin"
+    #     state: absent
 
-    - name: Jellyfin | Extract preconfigured installation
-      unarchive:
-        src: jellyfin.tar.xz
-        dest: "{{ homeflix_apps_volume }}"
-        remote_src: false
+    # - name: Jellyfin | Extract preconfigured installation
+    #   unarchive:
+    #     src: jellyfin.tar.xz
+    #     dest: "{{ homeflix_apps_volume }}"
+    #     remote_src: false
+    #     owner: 1000
+    #     group: 1000
+    #     mode: 0755
+
+    - name: Jellyfin | Copy database
+      copy:
+        src: jellyfin.db
+        dest: "{{ homeflix_apps_volume }}/jellyfin/data/data/jellyfin.db"
         owner: 1000
         group: 1000
-        mode: 0755
+        mode: 0644
+  
+    - name: Jellyfin | Update config file
+      replace:
+        path: "{{ homeflix_apps_volume }}/jellyfin/system.xml"
+        regexp: "<IsStartupWizardCompleted>false</IsStartupWizardCompleted>"
+        replace: "<IsStartupWizardCompleted>true</IsStartupWizardCompleted>"  
 
     - name: Jellyfin | Include task to restart the service
       vars:
@@ -80,7 +94,6 @@
         body:
           ServerName: "{{ homeflix_jellyfin_server_name }}"
         status_code: 204
-        follow_redirects: all
       when: startup_config.json.ServerName != homeflix_jellyfin_server_name
   tags:
     - update_jellyfin_server_name
@@ -113,7 +126,6 @@
           AuthenticationProviderId: "Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider"
           PasswordResetProviderId: "Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider"
         status_code: 200
-        follow_redirects: all
       loop: "{{ homeflix_jellyfin_users }}"
       loop_control:
         label: "{{ item.username }}"
@@ -129,7 +141,6 @@
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
         status_code: 204
-        follow_redirects: all
       loop: "{{ users_to_delete }}"
       loop_control:
         label: "{{ item.Name }}"
@@ -164,7 +175,6 @@
           'EnableRemoteAccess': true,
           'EnableAllFolders': true }, recursive=True) }}"
         status_code: 204
-        follow_redirects: all
       loop: "{{ homeflix_jellyfin_users }}"
       loop_control:
         label: "{{ item.username }}"
@@ -175,6 +185,10 @@
     - update_jellyfin_users
 
 - name: block - Manage libraries tasks
+  # NOTE:
+  # library location fields in not reconized via API request
+  # for new libraries, it has to be added manually from Web UI
+  # for movies and tv shows, location is present in database
   # TO DO:
   # delete libraries with Ansible
   block:
@@ -202,8 +216,7 @@
           LibraryOptions:
             PathInfos:
               - Path: "{{ item.path }}"
-        status_code: 204
-        follow_redirects: all
+        status_code: [201, 204]
       loop: "{{ jellyfin_libraries }}"
       loop_control:
         label: "{{ item.name }}"
@@ -217,7 +230,6 @@
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
         status_code: 204
-        follow_redirects: all
   tags:
     - update_jellyfin_libraries
 
@@ -303,7 +315,8 @@
   tags:
     - update_jellyfin_branding
 
-# do not change position of the following tasks block
+# DO NOT change position of the following tasks block
+# Issue: if handler is used, it's not found 
 - name: block - Restart container tasks
   block:
     - name: Jellyfin | Include task to restart the service

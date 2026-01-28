@@ -1,6 +1,22 @@
 ---
-- name: Restart services
-  become: true
-  community.docker.docker_compose_v2:
-    project_src: "{{ homeflix_apps_volume }}"
-    state: restarted
+- name: Restart Jellyfin and wait until is up
+  block:
+    - name: Jellyfin | Restart service
+      become: true
+      community.docker.docker_compose_v2:
+        project_src: "{{ homeflix_apps_volume }}"
+        state: restarted
+        services:
+          - jellyfin
+        build: never
+
+    - name: Jellyfin | Wait until configuration is loaded
+      uri:
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Startup/Configuration"
+        method: GET
+        headers:
+          X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
+      register: jellyfin_up
+      until: jellyfin_up.status == 200
+      retries: 30
+      delay: 5

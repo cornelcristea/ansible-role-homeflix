@@ -5,16 +5,16 @@
 homeflix_timezone: Europe/Bucharest
 
 # default password for qbittorrent
-# after deploy, change ONLY the password and save it to your host vars as ecrypted
+# after deploy, change ONLY the password and use in playbook as ecrypted
 homeflix_qbittorrent_password: adminadmin
 
 # default api key for bazarr
-# after deploy, generate a new one and save it to your host vars as ecrypted
+# after deploy, generate a new one and use in playbook as ecrypted
 homeflix_bazarr_api_key: 463482c2b8172db0ba2736f6a0b3dbc7
 
 # default api key for jellyfin
-# after deploy, generate a new one and save it to your host vars as ecrypted
-homeflix_jellyfin_api_key: fae9789ce96847aeb834dec33c67ee8e
+# after deploy, generate a new one and use in playbook as ecrypted
+homeflix_jellyfin_api_key: c62af39cf6634c6ca52c92b02f618b84
 
 # requires the traefik role to be deployed first
 # https://galaxy.ansible.com/ui/standalone/roles/cornelcristea/traefik
