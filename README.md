@@ -134,7 +134,7 @@ When running the playbook to deploy the Homeflix services, specific tags can be 
 | `update_seerr` | Update Seer service |
 | `update_sonarr` | Update Sonarr service |
 
-## Knowing issues
+## Known issues
 
 - The `Rename movies` option for Radarr has to be enabled manually from Web UI
 - The `Root folder` for Radarr and Sonarr has to be set manually from Web UI
