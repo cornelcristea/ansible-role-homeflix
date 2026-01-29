@@ -315,8 +315,8 @@
   tags:
     - update_jellyfin_branding
 
-# Issue: handler not found
-# TO DO: execute the handler
+# DO NOT change position of the following tasks block
+# Issue: handler not found when it has to be executed 
 - name: block - Restart container tasks
   block:
     - name: Jellyfin | Include task to restart the service

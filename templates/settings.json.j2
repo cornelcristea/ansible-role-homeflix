@@ -1,9 +1,9 @@
 {
- "clientId": "{{ client_id }}",
- "vapidPrivate": "{{ vapid_private }}",
- "vapidPublic": "{{ vapid_public }}",
+ "clientId": "",
+ "vapidPrivate": "",
+ "vapidPublic": "",
  "main": {
-  "apiKey": "{{ seerr_api_key }}",
+  "apiKey": "",
   "applicationTitle": "Jellyseerr",
   "applicationUrl": "",
   "cacheImages": false,
@@ -16,7 +16,7 @@
   "hideBlacklisted": false,
   "localLogin": true,
   "mediaServerLogin": true,
-  "newPlexLogin": true,
+  "newPlexLogin": false,
   "discoverRegion": "",
   "streamingRegion": "",
   "originalLanguage": "",
@@ -36,21 +36,21 @@
   "libraries": []
  },
  "jellyfin": {
-  "name": "{{ homeflix_jellyfin_server_name }}",
+  "name": "Jellyfin",
   "ip": "jellyfin",
   "port": {{ homeflix_jellyfin_port }},
   "useSsl": false,
   "urlBase": "",
   "externalHostname": "",
-  "jellyfinForgotPasswordUrl": "http://{{ homeflix_jellyfin_host}}/web/#/forgotpassword",
+  "jellyfinForgotPasswordUrl": "",
   "libraries": [
 {% for lib in homeflix_jellyfin_libraries %}
-   {
+  {
     "id": "{{ jf_libs_json | selectattr('Name', 'equalto', lib.name ) | map(attribute='ItemId') | first }}",
     "name": "{{ lib.name }}",
     "enabled": true,
     "type": "{{ 'movie' if lib.collection_type == 'movies' else 'show' }}"
-   }{% if not loop.last %},{% endif %}
+  }{% if not loop.last %},{% endif %}
 {% endfor %}
   ],
   "serverId": "{{ jf_server_id }}",
@@ -71,7 +71,7 @@
    "minimumAvailability": "released",
    "tags": [],
    "isDefault": true,
-   "syncEnabled": false,
+   "syncEnabled": true,
    "preventSearch": false,
    "tagRequests": false,
    "id": 0
@@ -84,7 +84,6 @@
    "port": {{ homeflix_sonarr_port }},
    "apiKey": "{{ sonarr_api_key }}",
    "useSsl": false,
-   "baseUrl": "",
    "activeProfileId": 6,
    "activeProfileName": "HD - 720p/1080p",
    "activeDirectory": "/data/tv",
@@ -102,7 +101,7 @@
   }
  ],
  "public": {
-  "initialized": false
+  "initialized": true
  },
  "notifications": {
   "agents": {

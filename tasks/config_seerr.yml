@@ -1,9 +1,14 @@
 ---
+- name: Seerr | Include task to wait for service
+  vars:
+    service_port: "{{ homeflix_seerr_port }}"
+  include_tasks: wait_for_service.yml
+
 - name: Seerr | Check settings
   become: true
   slurp:
     src: "{{ homeflix_apps_volume }}/seerr/settings.json"
-  register: settings_file
+  register: settings_json
 
 - name: Seerr | Get Radarr API key
   slurp:
@@ -15,27 +20,19 @@
     src: "{{ homeflix_apps_volume }}/sonarr/config.xml"
   register: sonarr_xml
 
-# - name: Seerr | Set fact for settings
-#   set_fact:
-#     settings_file_json: "{{ settings_file.content | b64decode | from_json }}"
+- name: Seerr | Determine first run
+  set_fact:
+    seerr_first_run: "(settings_json.content | b64decode | from_json).public.initialized"
 
-# - name: Seerr | Determine first run
-#   set_fact:
-#     seerr_first_run: "{{ not settings_file_json.public.initialized }}"
-#     seerr_api_key: "{{ settings_file_json.main.apiKey }}"
-
+# TO DO: find a way to configure seer using ansible
 # - name: block - First run tasks
 #   block:
-#     - include_tasks: stop_service.yml
+#     - name: Seerr | Include task to stop the service
 #       vars:
 #         service_name: seerr
+#       include_tasks: stop_service.yml
 
-#     - name: Seerr | Remove initial installation
-#       file:
-#         path: "{{ homeflix_apps_volume }}/Seerr"
-#         state: absent
-
-#     - name: Seerr | Get jellyfin system info
+#     - name: Seerr | Get Jellyfin system info
 #       uri:
 #         url: "http://localhost:{{ homeflix_jellyfin_port }}/System/Info"
 #         headers:
@@ -43,7 +40,7 @@
 #         return_content: true
 #       register: jf_info
 
-#     - name: Seerr | Get jellyfin libraries
+#     - name: Seerr | Get Jellyfin libraries
 #       uri:
 #         url: "http://localhost:{{ homeflix_jellyfin_port }}/Library/VirtualFolders"
 #         method: GET
@@ -53,23 +50,15 @@
 #         status_code: 200
 #       register: jf_libs
 
-#     - name: Seerr | Generate settings file
-#       vars:
-#         client_id: "{{ settings_file_json.clientId }}"
-#         vapid_private: "{{ settings_file_json.vapidPrivate }}"
-#         vapid_public: "{{ settings_file_json.vapidPublic }}"
-#         webhook_json_payload: "{{ settings_file_json.notifications.agents.webhook.options.jsonPayload }}"
-#         jf_api_key: "{{ lookup('community.general.random_string', length=32, special=false, upper=false) }}"
-#         jf_server_id: "{{ jf_info.json.Id }}"
-#         jf_libs_json: "{{ jf_libs.json }}"
-#         radarr_api_key: "{{ ((radarr_xml.content | b64decode) | regex_findall('<ApiKey>(.*?)</ApiKey>'))[0] }}"
-#         sonarr_api_key: "{{ ((sonarr_xml.content | b64decode) | regex_findall('<ApiKey>(.*?)</ApiKey>'))[0] }}"
-#       template:
-#         src: settings.json.j2
-#         dest: "{{ homeflix_apps_volume }}/seerr/settings.json"
-#         owner: 1000
-#         group: 1000
-#         mode: 0755
+#     - name: Seerr | Get Radarr API key
+#       slurp:
+#         src: "{{ homeflix_apps_volume }}/radarr/config.xml"
+#       register: radarr_xml
+
+#     - name: Seerr | Get Sonarr API key
+#       slurp:
+#         src: "{{ homeflix_apps_volume }}/sonarr/config.xml"
+#       register: sonarr_xml
 
 #     - name: Seerr | Copy database
 #       copy:
@@ -77,40 +66,36 @@
 #         dest: "{{ homeflix_apps_volume }}/seerr/db/db.sqlite3"
 #         owner: 1000
 #         group: 1000
+#         mode: 0644
+
+#     - name: Seerr | Generate settings file
+#       vars:
+#         jf_server_id: "{{ jf_info.json.Id }}"
+#         jf_libs_json: "{{ jf_libs.json }}"
+#         radarr_api_key: "{{ (radarr_xml.content | b64decode | regex_findall('<ApiKey>(.*?)</ApiKey>') | first) }}"
+#         sonarr_api_key: "{{ (sonarr_xml.content | b64decode | regex_findall('<ApiKey>(.*?)</ApiKey>') | first) }}"
+#       template:
+#         src: settings.json.j2
+#         dest: "{{ homeflix_apps_volume }}/seerr/settings.json"
+#         owner: 1000
+#         group: 1000
 #         mode: 0755
 
-#     - include_tasks: restart_service.yml
+#     - name: Seerr | Include task to restart the service
 #       vars:
 #         service_name: seerr
+#       include_tasks: restart_service.yml
 
-#     - include_tasks: wait_for_service.yml
+#     - name: Seerr | Include task to wait for service
 #       vars:
-#         service_name: seerr
 #         service_port: "{{ homeflix_seerr_port }}"
+#       include_tasks: wait_for_service.yml
 #   when: seerr_first_run
-
-# - name: Add services
-#    vars:
-#      services_to_add:
-#         - { name: "Sonarr", url: "http://sonarr:{{ homeflix_sonarr_port }}", apiKey: "API_KEY", type: "sonarr" }
-#         - { name: "Radarr", url: "http://radarr:{{ homeflix_radarr_port }}", apiKey: "API_KEY", type: "radarr" }
-#   uri:
-#     url: "http://localhost:{{ homeflix_seerr_port }}/api/server/{{ item.type }}"
-#     method: POST
-#     headers:
-#       Content-Type: "application/json"
-#       Authorization: "Bearer {{ seerr_api_token }}"
-#     body_format: json
-#     body: "{{ item }}"
-#     status_code: 201
-#   loop: "{{ services_to_add }}""
-#   loop_control:
-#     labels: "{{ item.name }}"
 
 - name: Create configuration txt file
   vars:
-    radarr_api_key: "{{ ((radarr_xml.content | b64decode) | regex_findall('<ApiKey>(.*?)</ApiKey>'))[0] }}"
-    sonarr_api_key: "{{ ((sonarr_xml.content | b64decode) | regex_findall('<ApiKey>(.*?)</ApiKey>'))[0] }}"
+    radarr_api_key: "{{ (radarr_xml.content | b64decode | regex_findall('<ApiKey>(.*?)</ApiKey>') | first) }}"
+    sonarr_api_key: "{{ (sonarr_xml.content | b64decode | regex_findall('<ApiKey>(.*?)</ApiKey>') | first) }}"
   copy:
     dest: /tmp/seerr.txt
     content: |
@@ -118,7 +103,7 @@
       ====================================
       1. Click here http://localhost:{{ homeflix_seerr_port }}
       2. Choose Jellyfin server
-      3. Jellyfin URL: http://jellyfin or, if you use DNS, complete with your domain
+      3. URL: http://jellyfin
       4. Choose your credentials for admin user
       5. Sync libraries and enable Movies and TV Shows (optional you can press Start Scan)
       6. Add Sonarr and Radarr as default servers with the following API keys:
