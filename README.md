@@ -49,9 +49,8 @@ Prowlarr (Indexers) --> Flaresolverr (Cloudflare bypass)
 
 ## Requirements
 
-- Linux OS with Debian distro (e.g Ubuntu)
-- Docker & Docker Compose
-- Ansible ≥ 2.18
+- Linux OS (Ubuntu)
+- Docker
 - Traefik (optional)
 
 ## Variables

@@ -20,7 +20,7 @@ homeflix_jellyfin_api_key: c62af39cf6634c6ca52c92b02f618b84
 # https://galaxy.ansible.com/ui/standalone/roles/cornelcristea/traefik
 # you need a real domain (free or paid) for public access
 # traefik acts as a reverse proxy and handles HTTPS certificates
-# makes jellyfin accessible from smart TVs or other external devices
+# makes jellyfin accessible on smart tv, phones from an external network
 # if using tailscale for private access, this is not needed
 # homeflix_jellyfin_host_domain: myhomeflix.com
 homeflix_jellyfin_host_domain: []
