@@ -35,7 +35,7 @@ This Ansible role deploys a full **media server stack** as docker containers:
 
 The working flow of these services is described in the following diagram.
 
-```
+```markdown
 Seer (Requester)
       |
       v
@@ -156,14 +156,14 @@ cd ansible-role-homeflix
 
 **3. Create a new branch**
 
-  ```bash
-  git checkout -b my-feature-branch
-  ```
+```bash
+git checkout -b my-feature-branch
+```
 
-  * Make your changes following Ansible best practices.
-  * Add or update tests if applicable.
-  * Update the README for any new variables or features.
-  * Test your changes:
+* Make your changes following Ansible best practices.
+* Add or update tests if applicable.
+* Update the README for any new variables or features.
+* Test your changes:
 
 ```bash
 ansible-playbook test.yml -i inventory
