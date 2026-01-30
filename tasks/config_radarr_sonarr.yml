@@ -36,7 +36,7 @@
     - name: "{{ service_name | capitalize }} | Include task to restart for service"
       include_tasks: restart_service.yml
 
-    - name: "{{ service_name | capitalize }} | Include task to wait for service"  
+    - name: "{{ service_name | capitalize }} | Include task to wait for service"
       include_tasks: wait_for_service.yml
   when: service_first_run
 
@@ -77,7 +77,7 @@
     - name: "{{ service_name | capitalize }} | Enable media renaming"
       vars:
         rename_enabled: >-
-          {{ ( media_naming.json.renameMovies if service_name == 'radarr' else media_naming.json.renameEpisodes ) }}
+          {{ (media_naming.json.renameMovies if service_name == 'radarr' else media_naming.json.renameEpisodes) }}
       uri:
         url: "http://localhost:{{ service_port }}/api/v3/config/naming"
         method: PUT
@@ -87,8 +87,9 @@
         body_format: json
         body: >
           {{
-            media_naming.json | 
-              combine({'renameMovies': true} if service_name == 'radarr' else {'renameEpisodes': true})
+            media_naming.json | combine(
+            {'renameMovies': true} if service_name == 'radarr'
+            else {'renameEpisodes': true})
           }}
         status_code: 202
       when: not rename_enabled

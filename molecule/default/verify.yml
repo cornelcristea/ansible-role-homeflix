@@ -29,4 +29,3 @@
       loop: "{{ containers_info.results }}"
       loop_control:
         label: "{{ item.item }}"
-
