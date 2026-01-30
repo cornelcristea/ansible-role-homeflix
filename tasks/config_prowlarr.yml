@@ -1,25 +1,30 @@
 ---
-- include_tasks: common/wait_for_service.yml
+- name: Prowlarr | Include task to wait for service
   vars:
-    service_name: prowlarr
     service_port: "{{ homeflix_prowlarr_port }}"
+  include_tasks: wait_for_service.yml
 
 - name: Prowlarr | Check configuration
   become: true
   slurp:
     src: "{{ homeflix_apps_volume }}/prowlarr/config.xml"
   register: config_xml
+  tags:
+    - update_prowlarr_indexers
 
 - name: Prowlarr | Determine first run
   set_fact:
     prowlarr_api_key: "{{ ((config_xml.content | b64decode) | regex_findall('<ApiKey>(.*?)</ApiKey>'))[0] }}"
     prowlarr_first_run: "{{ ('<AuthenticationMethod>None</AuthenticationMethod>' in (config_xml.content | b64decode | string)) }}"
+  tags:
+    - update_prowlarr_indexers
 
 - name: block - First run tasks
   block:
-    - include_tasks: common/stop_service.yml
+    - name: Prowlarr | Include task to stop the service
       vars:
         service_name: prowlarr
+      include_tasks: stop_service.yml
 
     - name: Prowlarr | Copy database
       copy:
@@ -35,17 +40,18 @@
         regexp: "<AuthenticationMethod>None</AuthenticationMethod>"
         replace: "<AuthenticationMethod>Forms</AuthenticationMethod>"
 
-    - include_tasks: common/restart_service.yml
+    - name: Prowlarr | Include task to restart the service
       vars:
         service_name: prowlarr
+      include_tasks: restart_service.yml
 
-    - include_tasks: common/wait_for_service.yml
+    - name: Prowlarr | Include task to wait for service
       vars:
-        service_name: prowlarr
         service_port: "{{ homeflix_prowlarr_port }}"
+      include_tasks: wait_for_service.yml
   when: prowlarr_first_run
 
-- name: block - Manage indexers
+- name: block - Manage indexers tasks
   block:
     - name: Prowlarr | Get existing indexers
       uri:
@@ -59,6 +65,7 @@
     - name: Prowlarr | Add indexers
       vars:
         existing_indexer_names: "{{ existing_indexers.json | map(attribute='name') | list }}"
+        prowlarr_indexers: "{{ homeflix_prowlarr_indexers + homeflix_prowlarr_indexers_extra }}"
       uri:
         url: "http://localhost:{{ homeflix_prowlarr_port }}/api/v1/indexer"
         method: POST
@@ -69,14 +76,14 @@
         body:
           name: "{{ item.name }}"
           enable: true
-          implementation: "{{ item.implementation }}"
-          configContract: "{{ item.config_contract }}"
+          implementation: "{{ item.get('implementation', 'Cardigann') }}"
+          configContract: "{{ item.get('configContract', 'CardigannSettings') }}"
           appProfileId: 1
-          priority: "{{ item.priority | default(25) }}"
+          priority: 25
           fields: "{{ item.fields | dict2items(key_name='name', value_name='value') }}"
           tags: "{{ item.tags | default([]) }}"
         status_code: 201
-      loop: "{{ homeflix_prowlarr_indexers }}"
+      loop: "{{ prowlarr_indexers }}"
       loop_control:
         label: "{{ item.name }}"
       ignore_errors: true
@@ -84,7 +91,7 @@
 
     - name: Prowlarr | Delete indexers
       vars:
-        indexers_to_keep: "{{ homeflix_prowlarr_indexers | map(attribute='name') | list }}"
+        indexers_to_keep: "{{ (homeflix_prowlarr_indexers + homeflix_prowlarr_indexers_extra) | map(attribute='name') | list }}"
         indexers_to_delete: "{{ existing_indexers.json | rejectattr('name', 'in', indexers_to_keep) | list }}"
       uri:
         url: "http://localhost:{{ homeflix_prowlarr_port }}/api/v1/indexer/{{ item.id }}"
@@ -99,7 +106,7 @@
   tags:
     - update_prowlarr_indexers
 
-- name: block - Manage applications
+- name: block - Manage applications tasks
   block:
     - name: Prowlarr | Get existing applications
       uri:

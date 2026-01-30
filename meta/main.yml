@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: homeflix
-  author: Cornel Cristea
+  author: cornelcristea
   description: Ansible role to deploy a self-hosted media server (Jellyfin, Radarr, Sonarr, etc)
 
   license: MIT

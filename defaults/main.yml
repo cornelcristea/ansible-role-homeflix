@@ -1,83 +1,67 @@
 ---
 # defaults file for homeflix
 
+# timezone for docker services
+homeflix_timezone: Europe/Bucharest
+
+# list with extra data folders
+# used when jellyfin libraries are added
+homeflix_data_folders_extra: []
+
 # default password for qbittorrent
-# after deploy, change ONLY the password and save it to your host vars as ecrypted
+# after deploy, change ONLY the password and use in playbook as ecrypted
 homeflix_qbittorrent_password: adminadmin
 
 # default api key for bazarr
-# after deploy, generate a new one and save it to your host vars as ecrypted
+# after deploy, generate a new one and use in playbook as ecrypted
 homeflix_bazarr_api_key: 463482c2b8172db0ba2736f6a0b3dbc7
 
 # default api key for jellyfin
-# after deploy, generate a new one and save it to your host vars as ecrypted
-homeflix_jellyfin_api_key: fae9789ce96847aeb834dec33c67ee8e
+# after deploy, generate a new one and use in playbook as ecrypted
+homeflix_jellyfin_api_key: c62af39cf6634c6ca52c92b02f618b84
 
 # requires the traefik role to be deployed first
 # https://galaxy.ansible.com/ui/standalone/roles/cornelcristea/traefik
 # you need a real domain (free or paid) for public access
 # traefik acts as a reverse proxy and handles HTTPS certificates
-# makes jellyfin accessible from smart TVs or other external devices
+# makes jellyfin accessible on smart tv, phones from an external network
 # if using tailscale for private access, this is not needed
-homeflix_host_domain: homeflix.example.com
+# homeflix_jellyfin_host_domain: myhomeflix.com
+homeflix_jellyfin_host_domain: []
 
-homeflix_timezone: Europe/Bucharest
-
+# name shown in dashboard and in the browser tabs
 homeflix_jellyfin_server_name: HomeFlix
 
+# use ansible vault to encrypt the passwords in playbook
+# isAdmin: make the user an admin (false if not defined)
+# isHidden: enable/disable login panel visibility (true if not defined)
 homeflix_jellyfin_users:
   - username: homeflix
-    password: StrongPass123! # encrypsted passwords are recommended
+    password: pass123
+    isAdmin: false
+    isHidden: false
 
-homeflix_jellyfin_libraries:
-  - name: "Movies"
-    collection_type: "movies"
-    location: "{{ homeflix_data_volume }}/movies"
-  - name: "TV Shows"
-    collection_type: "tvshows"
-    location: "{{ homeflix_data_volume }}/tv"
+# homeflix_jellyfin_plugins:
+#   - name: Example
+#     src: https://example.com/plugins/file.zip
+homeflix_jellyfin_plugins: []
 
-homeflix_jellyfin_plugins:
-  - name: SkinManager
-    src: https://github.com/danieladov/jellyfin-plugin-skin-manager/releases/download/2.0.2/Jellyfin-Plugin-SkinManager.zip
+# homeflix_jellyfin_custom_css: |
+#   @import(url/to/file.css);
+#   :root {
+#     --bold: 18px
+#   }
+homeflix_jellyfin_custom_css: []
 
-homeflix_prowlarr_indexers:
-  - name: 1337x
-    implementation: Cardigann
-    config_contract: CardigannSettings
-    fields:
-      baseUrl: https://x1337x.eu
-      definitionFile: 1337x
-      tags: [1]
-  - name: EZTV
-    implementation: Cardigann
-    config_contract: CardigannSettings
-    fields:
-      baseUrl: https://eztvx.to
-      definitionFile: eztv
-  - name: LimeTorrents
-    implementation: Cardigann
-    config_contract: CardigannSettings
-    fields:
-      baseUrl: https://limetorrents.proxyninja.org
-      definitionFile: limetorrents
-      tags: [1]
-  - name: TorrentGalaxyClone
-    implementation: Cardigann
-    config_contract: CardigannSettings
-    fields:
-      baseUrl: https://torrentgalaxy.info/
-      definitionFile: torrentgalaxyclone
-    tags: [1]
-  - name: The Pirate Bay
-    implementation: Cardigann
-    config_contract: CardigannSettings
-    fields:
-      baseUrl: https://thepiratebay.zone
-      definitionFile: thepiratebay
-  - name: showRSS
-    implementation: Cardigann
-    config_contract: CardigannSettings
-    fields:
-      baseUrl: https://showrss.info
-      definitionFile: showrss
+homeflix_jellyfin_splash_screen_enabled: false
+
+homeflix_jellyfin_libraries_extra: []
+
+homeflix_prowlarr_indexers_extra: []
+
+# homeflix_bazarr_lang_profiles:
+#   - name: Homeflix_Ro_En
+#     languages: [ron, eng]
+#     cutoff: eng
+#     default: false
+#     enabled: true

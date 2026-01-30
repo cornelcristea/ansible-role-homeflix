@@ -30,7 +30,7 @@
         owner: 1000
         group: 1000
         mode: 0755
-      loop: "{{ homeflix_data_folders }}"
+      loop: "{{ homeflix_data_folders + homeflix_data_folders_extra }}"
       loop_control:
         label: "{{ item }}"
 
@@ -52,9 +52,5 @@
         remove_orphans: true
         build: never
       register: services_result
-
-    - name: Install | Wait until all services are up
-      command: sleep 15
-      when: services_result.changed
   tags:
     - update_docker_compose

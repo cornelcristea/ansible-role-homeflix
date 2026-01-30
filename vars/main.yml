@@ -36,7 +36,7 @@ homeflix_docker_services:
       - "{{ homeflix_jellyfin_port_https }}:8920"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.jellyfin.rule=Host(`{{ homeflix_host_domain }}`)"
+      - "traefik.http.routers.jellyfin.rule=Host(`{{ homeflix_jellyfin_host_domain }}`)"
       - "traefik.http.routers.jellyfin.entrypoints=https"
       - "traefik.http.routers.jellyfin.tls=true"
       - "traefik.http.routers.jellyfin.tls.certresolver=letsencrypt"
@@ -65,3 +65,53 @@ homeflix_docker_services:
     image: lscr.io/linuxserver/sonarr:latest
     ports:
       - "{{ homeflix_sonarr_port }}:8989"
+
+homeflix_jellyfin_login_disclaimer: |
+  Deployed by Ansible @ cornelcristea.homeflix
+
+homeflix_jellyfin_libraries:
+  - { name: Movies, collection_type: movies, path: /data/movies }
+  - { name: TV Shows, collection_type: tvshows, path: /data/tv }
+
+homeflix_prowlarr_indexers:
+  - name: 1337x
+    fields:
+      baseUrl: https://x1337x.eu
+      definitionFile: 1337x
+    tags: [1]
+  - name: EZTV
+    fields:
+      baseUrl: https://eztvx.to
+      definitionFile: eztv
+  - name: LimeTorrents
+    fields:
+      baseUrl: https://limetorrents.proxyninja.org
+      definitionFile: limetorrents
+    tags: [1]
+  - name: TorrentGalaxyClone
+    fields:
+      baseUrl: https://torrentgalaxy.info/
+      definitionFile: torrentgalaxyclone
+    tags: [1]
+  - name: The Pirate Bay
+    fields:
+      baseUrl: https://thepiratebay.zone
+      definitionFile: thepiratebay
+  - name: showRSS
+    fields:
+      baseUrl: https://showrss.info
+      definitionFile: showrss
+  - name: isohunt2
+    fields:
+      baseUrl: https://isohunt.sh
+      definitionFile: isohunt2
+    tags: [1]
+  - name: BitSearch
+    fields:
+      baseUrl: https://bitsearch.to
+      definitionFile: bitsearch
+  - name: ExtraTorrent.st
+    fields:
+      baseUrl: https://extratorrent.st
+      definitionFile: extratorrent-st
+    tags: [1]

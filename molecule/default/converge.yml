@@ -1,0 +1,28 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  pre_tasks:
+    - name: Install prerequisites
+      apt:
+        name:
+          - curl
+          - docker.io
+          - python3-requests
+          - python3-docker
+        state: present
+        update_cache: true
+
+    - name: Download docker compose plugin
+      get_url:
+        url: http://mirrors.kernel.org/ubuntu/pool/universe/d/docker-compose-v2/docker-compose-v2_2.24.6+ds1-0ubuntu2_amd64.deb
+        dest: /tmp/docker-compose-v2.deb
+        mode: 0755
+
+    - name: Install docker compose plugin
+      apt:
+        deb: /tmp/docker-compose-v2.deb
+
+  roles:
+    - cornelcristea.homeflix

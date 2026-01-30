@@ -1,6 +1,7 @@
 # template task to config radarr and sonarr
 ---
-- include_tasks: common/wait_for_service.yml
+- name: "{{ service_name | capitalize }} | Include task to wait for service"
+  include_tasks: wait_for_service.yml
 
 - name: "{{ service_name | capitalize }} | Check configuration"
   become: true
@@ -15,7 +16,8 @@
 
 - name: block - First run tasks
   block:
-    - include_tasks: common/stop_service.yml
+    - name: "{{ service_name | capitalize }} | Include task to stop the service"
+      include_tasks: stop_service.yml
 
     - name: "{{ service_name | capitalize }} | Copy database"
       copy:
@@ -31,52 +33,109 @@
         regexp: "<AuthenticationMethod>None</AuthenticationMethod>"
         replace: "<AuthenticationMethod>Forms</AuthenticationMethod>"
 
-    - include_tasks: common/restart_service.yml
+    - name: "{{ service_name | capitalize }} | Include task to restart for service"
+      include_tasks: restart_service.yml
 
-    - include_tasks: common/wait_for_service.yml
-
+    - name: "{{ service_name | capitalize }} | Include task to wait for service"
+      include_tasks: wait_for_service.yml
   when: service_first_run
 
-- name: "{{ service_name | capitalize }} | Get existing download clients"
-  uri:
-    url: "http://localhost:{{ service_port }}/api/v3/downloadclient"
-    method: GET
-    headers:
-      X-Api-Key: "{{ service_api_key }}"
-  register: existing_download_clients
+- name: block - Media management tasks
+  block:
+    - name: "{{ service_name | capitalize }} | Get existing root folders"
+      uri:
+        url: "http://localhost:{{ service_port }}/api/v3/rootfolder"
+        method: GET
+        headers:
+          X-Api-Key: "{{ service_api_key }}"
+      register: existing_root_folders
 
-- name: "{{ service_name | capitalize }} | Add qBittorrent download client"
-  vars:
-    qb_client_exists: "{{ existing_download_clients.json | selectattr('name', 'equalto', 'qBittorrent') | list | length > 0 }}"
-  uri:
-    url: "http://localhost:{{ service_port }}/api/v3/downloadclient"
-    method: POST
-    headers:
-      X-Api-Key: "{{ service_api_key }}"
-      Content-Type: "application/json"
-    body_format: json
-    body:
-      enable: true
-      implementation: "QBittorrent"
-      implementationName: "qBittorrent"
-      name: "qBittorrent"
-      priority: 1
-      removeCompletedDownloads: true
-      removeFailedDownloads: true
-      fields:
-        - name: host
-          value: "qbittorrent"
-        - name: port
-          value: "{{ homeflix_qbittorrent_port }}"
-        - name: useSsl
-          value: false
-        - name: username
-          value: "admin"
-        - name: password
-          value: "{{ homeflix_qbittorrent_password }}"
-        - name: "{{ category_field }}"
-          value: "{{ category_value }}"
-      configContract: "QBittorrentSettings"
-      tags: []
-    status_code: 201
-  when: not qb_client_exists
+    - name: "{{ service_name | capitalize }} | Add root folder"
+      vars:
+        root_folder: "{{ '/data/movies' if service_name == 'radarr' else '/data/tv' }}"
+        root_folder_exists: "{{ existing_root_folders.json | selectattr('path', 'equalto', root_folder) | list | length > 0 }}"
+      uri:
+        url: "http://localhost:{{ service_port }}/api/v3/rootfolder"
+        method: POST
+        headers:
+          X-Api-Key: "{{ service_api_key }}"
+          Content-Type: application/json
+        body_format: json
+        body:
+          path: "{{ root_folder }}"
+        status_code: [200, 201]
+      when: not root_folder_exists
+
+    - name: "{{ service_name | capitalize }} | Get media naming config"
+      uri:
+        url: "http://localhost:{{ service_port }}/api/v3/config/naming"
+        method: GET
+        headers:
+          X-Api-Key: "{{ service_api_key }}"
+      register: media_naming
+
+    - name: "{{ service_name | capitalize }} | Enable media renaming"
+      vars:
+        rename_enabled: >-
+          {{ (media_naming.json.renameMovies if service_name == 'radarr' else media_naming.json.renameEpisodes) }}
+      uri:
+        url: "http://localhost:{{ service_port }}/api/v3/config/naming"
+        method: PUT
+        headers:
+          X-Api-Key: "{{ service_api_key }}"
+          Content-Type: "application/json"
+        body_format: json
+        body: >
+          {{
+            media_naming.json | combine(
+            {'renameMovies': true} if service_name == 'radarr'
+            else {'renameEpisodes': true})
+          }}
+        status_code: 202
+      when: not rename_enabled
+
+- name: block - Download client tasks
+  block:
+    - name: "{{ service_name | capitalize }} | Get existing download clients"
+      uri:
+        url: "http://localhost:{{ service_port }}/api/v3/downloadclient"
+        method: GET
+        headers:
+          X-Api-Key: "{{ service_api_key }}"
+      register: existing_download_clients
+
+    - name: "{{ service_name | capitalize }} | Add qBittorrent download client"
+      vars:
+        qb_client_exists: "{{ existing_download_clients.json | selectattr('name', 'equalto', 'qBittorrent') | list | length > 0 }}"
+      uri:
+        url: "http://localhost:{{ service_port }}/api/v3/downloadclient"
+        method: POST
+        headers:
+          X-Api-Key: "{{ service_api_key }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          enable: true
+          implementation: "QBittorrent"
+          implementationName: "qBittorrent"
+          name: "qBittorrent"
+          priority: 1
+          removeCompletedDownloads: true
+          removeFailedDownloads: true
+          fields:
+            - name: host
+              value: "qbittorrent"
+            - name: port
+              value: "{{ homeflix_qbittorrent_port }}"
+            - name: useSsl
+              value: false
+            - name: username
+              value: "admin"
+            - name: password
+              value: "{{ homeflix_qbittorrent_password }}"
+            - name: "{{ 'tvCategory' if service_nmae == 'sonarr' else 'movieCategory' }}"
+              value: "{{ 'tv' if service_nmae == 'sonarr' else 'movies' }}"
+          configContract: "QBittorrentSettings"
+          tags: []
+        status_code: 201
+      when: not qb_client_exists

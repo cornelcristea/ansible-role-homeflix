@@ -1,8 +1,10 @@
 ---
-- name: Jellyfin | Wait until configuration is completed
+- name: Jellyfin | Wait until configuration is loaded
   uri:
-    url: "http://localhost:{{ homeflix_jellyfin_port }}/System/Info/Public"
+    url: "http://localhost:{{ homeflix_jellyfin_port }}/Startup/Configuration"
     method: GET
+    headers:
+      X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
   register: jellyfin_up
   until: jellyfin_up.status == 200
   retries: 30
@@ -20,39 +22,57 @@
 
 - name: block - First run tasks
   block:
-    - include_tasks: common/stop_service.yml
+    - name: Jellyfin | Include task to stop the service
       vars:
         service_name: jellyfin
+      include_tasks: stop_service.yml
 
-    - name: Jellyfin | Remove initial installation
-      file:
-        path: "{{ homeflix_apps_volume }}/jellyfin"
-        state: absent
+    # - name: Jellyfin | Remove initial installation
+    #   file:
+    #     path: "{{ homeflix_apps_volume }}/jellyfin"
+    #     state: absent
 
-    - name: Jellyfin | Extract preconfigured installation
-      unarchive:
-        src: jellyfin.tar.xz
-        dest: "{{ homeflix_apps_volume }}"
-        remote_src: false
+    # - name: Jellyfin | Extract preconfigured installation
+    #   unarchive:
+    #     src: jellyfin.tar.xz
+    #     dest: "{{ homeflix_apps_volume }}"
+    #     remote_src: false
+    #     owner: 1000
+    #     group: 1000
+    #     mode: 0755
+
+    - name: Jellyfin | Copy database
+      copy:
+        src: jellyfin.db
+        dest: "{{ homeflix_apps_volume }}/jellyfin/data/data/jellyfin.db"
         owner: 1000
         group: 1000
-        mode: 0755
+        mode: 0644
 
-    - include_tasks: common/restart_service.yml
+    - name: Jellyfin | Update config file
+      replace:
+        path: "{{ homeflix_apps_volume }}/jellyfin/system.xml"
+        regexp: "<IsStartupWizardCompleted>false</IsStartupWizardCompleted>"
+        replace: "<IsStartupWizardCompleted>true</IsStartupWizardCompleted>"
+
+    - name: Jellyfin | Include task to restart the service
       vars:
         service_name: jellyfin
+      include_tasks: restart_service.yml
 
-    - name: Jellyfin | Wait until service is up
+    - name: Jellyfin | Wait until configuration is loaded
       uri:
-        url: "http://localhost:{{ homeflix_jellyfin_port }}/System/Info/Public"
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Startup/Configuration"
         method: GET
+        headers:
+          X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
       register: jellyfin_up
       until: jellyfin_up.status == 200
       retries: 30
       delay: 5
   when: jellyfin_first_run
 
-- name: block - Manage server name
+- name: block - Manage server name tasks
   block:
     - name: Jellyfin | Get current server name
       uri:
@@ -74,7 +94,6 @@
         body:
           ServerName: "{{ homeflix_jellyfin_server_name }}"
         status_code: 204
-        follow_redirects: all
       when: startup_config.json.ServerName != homeflix_jellyfin_server_name
   tags:
     - update_jellyfin_server_name
@@ -104,8 +123,9 @@
         body:
           Name: "{{ item.username }}"
           Password: "{{ item.password }}"
+          AuthenticationProviderId: "Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider"
+          PasswordResetProviderId: "Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider"
         status_code: 200
-        follow_redirects: all
       loop: "{{ homeflix_jellyfin_users }}"
       loop_control:
         label: "{{ item.username }}"
@@ -121,42 +141,58 @@
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
         status_code: 204
-        follow_redirects: all
       loop: "{{ users_to_delete }}"
       loop_control:
         label: "{{ item.Name }}"
       when: users_to_delete | length > 0
 
+    - name: Jellyfin | Refresh users
+      uri:
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Users"
+        method: GET
+        headers:
+          X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
+        return_content: true
+        status_code: 200
+      register: existing_users
+
     - name: Jellyfin | Update users policy
       vars:
-        user_info: "{{ (existing_users.json | selectattr('Name', 'equalto', item.username) | list)[0] }}"
-        user_id: "{{ user_info.Id }}"
-        user_policy: "{{ user_info.Policy | default({}) }}"
+        existing_user_info: "{{ (existing_users.json | selectattr('Name', 'equalto', item.username) | list | first) }}"
+        existing_user_id: "{{ existing_user_info.Id }}"
+        existing_user_policy: "{{ existing_user_info.Policy | default({}) }}"
       uri:
-        url: "http://localhost:{{ homeflix_jellyfin_port }}/Users/{{ user_id }}/Policy"
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Users/{{ existing_user_id }}/Policy"
         method: POST
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
           Content-Type: "application/json"
         body_format: json
-        body:
-          IsHidden: true # "{{ user_policy.IsAdministrator | default(false) }}"
-          AuthenticationProviderId: "Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider"
-          PasswordResetProviderId: "Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider"
+        body: >
+          "{{ existing_user_policy | combine({
+            'IsAdministrator': item.isAdmin | default(false),
+            'IsHidden': item.isHidden | default(true),
+            'EnableUserPreferenceAccess': true,
+            'EnableRemoteAccess': true,
+            'EnableAllFolders': true}, recursive=True)
+          }}"
         status_code: 204
-        follow_redirects: all
       loop: "{{ homeflix_jellyfin_users }}"
       loop_control:
         label: "{{ item.username }}"
-      when: (user_policy.IsHidden | default(false)) != (user_policy.IsAdministrator | default(false))
+      when: >
+        existing_user_policy.IsHidden != item.isHidden | default(true) or
+        existing_user_policy.IsAdministrator != item.isAdmin | default(false)
   tags:
     - update_jellyfin_users
 
-# NOTE:
-# library location fields in not reconized via API request (it has to be added manually from Web UI)
-# TO DO:
-# delete libraries with Ansible
 - name: block - Manage libraries tasks
+  # NOTE:
+  # library location fields in not reconized via API request
+  # for new libraries, it has to be added manually from Web UI
+  # for movies and tv shows, location is present in database
+  # TO DO:
+  # delete libraries with Ansible
   block:
     - name: Jellyfin | Get existing libraries
       uri:
@@ -169,6 +205,8 @@
       register: existing_libraries
 
     - name: Jellyfin | Create libraries
+      vars:
+        jellyfin_libraries: "{{ homeflix_jellyfin_libraries + homeflix_jellyfin_libraries_extra }}"
       uri:
         url: "http://localhost:{{ homeflix_jellyfin_port }}/Library/VirtualFolders?name={{ item.name | urlencode }}&CollectionType={{ item.collection_type }}"
         method: POST
@@ -177,12 +215,11 @@
           Content-Type: application/json
         body_format: json
         body:
-          Locations: ["{{ item.location }}"]
           LibraryOptions:
-            AutomaticRefreshIntervalDays: 1
-        status_code: 204
-        follow_redirects: all
-      loop: "{{ homeflix_jellyfin_libraries }}"
+            PathInfos:
+              - Path: "{{ item.path }}"
+        status_code: [201, 204]
+      loop: "{{ jellyfin_libraries }}"
       loop_control:
         label: "{{ item.name }}"
       when: >
@@ -195,7 +232,6 @@
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
         status_code: 204
-        follow_redirects: all
   tags:
     - update_jellyfin_libraries
 
@@ -257,13 +293,40 @@
       loop: "{{ removable_plugins }}"
       loop_control:
         label: "{{ item }}"
+  tags:
+    - update_jellyfin_plugins
 
-    - include_tasks: common/restart_service.yml
+- name: block - Manage brading tasks
+  block:
+    - name: Jellyfin | Copy splash screen
+      copy:
+        src: "splash-screen.jpg"
+        dest: "{{ homeflix_apps_volume }}/jellyfin/data/data/splashscreen-upload.jpg"
+        owner: 1000
+        group: 1000
+        mode: 0644
+
+    - name: Jellyfin | Generate branding xml
+      template:
+        src: branding.xml.j2
+        dest: "{{ homeflix_apps_volume }}/jellyfin/branding.xml"
+        owner: 1000
+        group: 1000
+        mode: 0644
+      register: branding_xml
+  tags:
+    - update_jellyfin_branding
+
+# DO NOT change position of the following tasks block
+# Issue: handler not found when it has to be executed
+- name: block - Restart container tasks
+  block:
+    - name: Jellyfin | Include task to restart the service
       vars:
         service_name: jellyfin
-      when: install_plugins.changed or uninstall_plugins.changed
+      include_tasks: restart_service.yml
 
-    - name: Jellyfin | Wait for service to be up
+    - name: Jellyfin | Wait until configuration is loaded
       uri:
         url: "http://localhost:{{ homeflix_jellyfin_port }}/Startup/Configuration"
         method: GET
@@ -273,6 +336,11 @@
       until: jellyfin_up.status == 200
       retries: 30
       delay: 5
-      when: install_plugins.changed or uninstall_plugins.changed
+  when: >
+    ( branding_xml is defined and branding_xml.changed ) or
+    ( uninstall_plugins is defined and uninstall_plugins.changed ) or
+    ( install_plugins is defined and install_plugins.changed ) or
+    ( splash_screen is defined and splash_screen.changed )
   tags:
     - update_jellyfin_plugins
+    - update_jellyfin_branding
