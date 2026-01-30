@@ -6,9 +6,18 @@
 - [Requirements](#requirements)
 - [Variables](#variables)
 - [Notes](#notes)
-- [Example Playbook](#example-playbook)
-- [Knowing issues](#knowing-issues)
+- [Playbook example](#playbook-example)
+- [Known issues](#known-issues)
 - [How to Contribute](#how-to-contribute)
+
+## Requirements
+
+- Linux OS (Ubuntu)
+- Docker
+- Traefik (optional)
+
+For traefik, a dedicated ansible role can be used. It can be found on the follwong link:<br>
+https://galaxy.ansible.com/ui/standalone/roles/cornelcristea/traefik/
 
 ## Description
 
@@ -46,12 +55,6 @@ Prowlarr (Indexers) --> Flaresolverr (Cloudflare bypass)
                         v
                   Jellyfin (Streaming)
 ```
-
-## Requirements
-
-- Linux OS (Ubuntu)
-- Docker
-- Traefik (optional)
 
 ## Variables
 
