@@ -76,6 +76,7 @@ The role use the following variables
 | `homeflix_apps_volume` | Host path where application configs are stored. | `/opt/homeflix` |
 | `homeflix_data_volume` | Host path where media data is stored. | `/mnt/homeflix` |
 | `homeflix_data_folders` | Media folders created under data volume. | `downloads, movies, tv` |
+| `homeflix_data_folders_extra` | Estra media folders. | *(empty)* |
 | `homeflix_bazarr_port` | Bazarr web UI port. | `6767` |
 | `homeflix_jellyfin_port` | Jellyfin HTTP port. | `8096` |
 | `homeflix_jellyfin_port_https` | Jellyfin HTTPS port. | `8920` |

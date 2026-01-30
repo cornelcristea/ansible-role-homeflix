@@ -62,5 +62,34 @@
         service_port: "{{ homeflix_bazarr_port }}"
       include_tasks: wait_for_service.yml
   when: bazarr_first_run
-# TO DO:
-# Add language profile within API
+
+# TO DO: Add languages profile with Ansible
+# - name: Bazarr | Get existing language profiles
+#   uri:
+#     url: "http://localhost:{{ homeflix_bazarr_port }}/api/v1/languages/profile"
+#     method: GET
+#     headers:
+#       X-API-Key: "{{ homeflix_bazarr_api_key }}"
+#       Accept: "application/json"
+#     return_content: true
+#   register: existing_lang_profiles
+
+# - name: Bazarr | Create language profiles
+#   uri:
+#     url: "http://localhost:{{ homeflix_bazarr_port }}/api/v1/languageProfiles"
+#     method: POST
+#     headers:
+#       X-API-Key: "{{ homeflix_bazarr_api_key }}"
+#       Content-Type: "application/json"
+#     body_format: json
+#     body:
+#       name: "{{ item.name }}"
+#       languages: "{{ item.languages }}"
+#       enabled: "{{ item.enabled | default(true) }}"
+#       default: "{{ item.default | default(false) }}"
+#       cutoff: "{{ item.cutoff | default([]) }}"
+#     status_code: 201
+#   loop: "{{ homeflix_bazarr_lang_profiles }}"
+#   loop_control:
+#     label: "{{ item.name }}"
+#   when: not ( existing_lang_profiles.json | selectattr('name', 'equalto', item.name) | list | length > 0 )

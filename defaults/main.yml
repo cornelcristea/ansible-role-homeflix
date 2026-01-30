@@ -4,6 +4,9 @@
 # timezone for docker services
 homeflix_timezone: Europe/Bucharest
 
+# list with extra data folders
+homeflix_data_folders_extra: []
+
 # default password for qbittorrent
 # after deploy, change ONLY the password and use in playbook as ecrypted
 homeflix_qbittorrent_password: adminadmin
@@ -54,3 +57,10 @@ homeflix_jellyfin_splash_screen_enabled: false
 homeflix_jellyfin_libraries_extra: []
 
 homeflix_prowlarr_indexers_extra: []
+
+# homeflix_bazarr_lang_profiles:
+#   - name: Homeflix_Ro_En
+#     languages: [ron, eng]
+#     cutoff: eng
+#     default: false
+#     enabled: true
