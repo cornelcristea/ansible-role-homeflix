@@ -5,6 +5,7 @@
 homeflix_timezone: Europe/Bucharest
 
 # list with extra data folders
+# used when jellyfin libraries are added
 homeflix_data_folders_extra: []
 
 # default password for qbittorrent

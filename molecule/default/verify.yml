@@ -1,0 +1,32 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  tasks:
+    - name: Get containers info
+      docker_container_info:
+        name: "{{ item }}"
+      register: containers_info
+      loop:
+        - bazarr
+        - jellyfin
+        - qbittorrent
+        - radarr
+        - recyclarr
+        - prowlarr
+        - seerr
+        - sonarr
+      loop_control:
+        label: "{{ item }}"
+
+    - name: Check if containers are running
+      assert:
+        that:
+          - item.exists
+          - item.container.State.Running
+        fail_msg: "Container {{ item.item }} is NOT running"
+        success_msg: "Container {{ item.item }} is running"
+      loop: "{{ containers_info.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+
