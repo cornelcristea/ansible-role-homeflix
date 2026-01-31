@@ -182,12 +182,6 @@
     - update_jellyfin_users
 
 - name: block - Manage libraries tasks
-  # NOTE:
-  # library location fields in not reconized via API request
-  # for new libraries, it has to be added manually from Web UI
-  # for movies and tv shows, location is present in database
-  # TO DO:
-  # delete libraries with Ansible
   block:
     - name: Jellyfin | Get existing libraries
       uri:
@@ -213,12 +207,28 @@
           LibraryOptions:
             PathInfos:
               - Path: "{{ item.path }}"
+          RefreshLibraryOnStartup: true
+          EnableRealtimeMonitor: true
         status_code: [201, 204]
       loop: "{{ jellyfin_libraries }}"
       loop_control:
         label: "{{ item.name }}"
-      when: >
-        existing_libraries.json | selectattr('Name', 'equalto', item.name) | list | length == 0
+      when: existing_libraries.json | selectattr('Name', 'equalto', item.name) | list | length == 0
+
+    - name: Jellyfin | Delete libraries
+      vars:
+        libraries_to_keep: "{{ ((homeflix_jellyfin_libraries + homeflix_jellyfin_libraries_extra) | map(attribute='name') | list) }}"
+        libraries_to_delete: "{{ existing_libraries.json | rejectattr('Name', 'in', libraries_to_keep) | list }}"
+      uri:
+        url: "http://localhost:{{ homeflix_jellyfin_port }}/Library/VirtualFolders?name={{ item.Name | urlencode }}&id={{ item.ItemId }}"
+        method: DELETE
+        headers:
+          X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
+        status_code: 204
+      loop: "{{ libraries_to_delete }}"
+      loop_control:
+        label: "{{ item.Name }}"
+      when: libraries_to_delete | length > 0
 
     - name: Jellyfin | Refresh libraries
       uri:
@@ -270,7 +280,6 @@
         group: 1000
         mode: 0755
         creates: "{{ homeflix_apps_volume }}/jellyfin/data/plugins/{{ item.name }}/plugin.json"
-      register: install_plugins
       loop: "{{ homeflix_jellyfin_plugins }}"
       loop_control:
         label: "{{ item.name }}"
@@ -284,10 +293,10 @@
       file:
         path: "{{ homeflix_apps_volume }}/jellyfin/data/plugins/{{ item }}"
         state: absent
-      register: uninstall_plugins
       loop: "{{ removable_plugins }}"
       loop_control:
         label: "{{ item }}"
+  notify: restart jellyfin
   tags:
     - update_jellyfin_plugins
 
@@ -309,33 +318,6 @@
         group: 1000
         mode: 0644
       register: branding_xml
+  notify: restart jellyfin
   tags:
-    - update_jellyfin_branding
-
-# DO NOT change position of the following tasks block
-# Issue: handler not found when it has to be executed
-- name: block - Restart container tasks
-  block:
-    - name: Jellyfin | Include task to restart the service
-      vars:
-        service_name: jellyfin
-      include_tasks: restart_service.yml
-
-    - name: Jellyfin | Wait until configuration is loaded
-      uri:
-        url: "http://localhost:{{ homeflix_jellyfin_port }}/Startup/Configuration"
-        method: GET
-        headers:
-          X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
-      register: jellyfin_up
-      until: jellyfin_up.status == 200
-      retries: 30
-      delay: 5
-  when: >
-    ( branding_xml is defined and branding_xml.changed ) or
-    ( uninstall_plugins is defined and uninstall_plugins.changed ) or
-    ( install_plugins is defined and install_plugins.changed ) or
-    ( splash_screen is defined and splash_screen.changed )
-  tags:
-    - update_jellyfin_plugins
     - update_jellyfin_branding

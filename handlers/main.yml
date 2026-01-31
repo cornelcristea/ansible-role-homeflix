@@ -9,6 +9,7 @@
         services:
           - jellyfin
         build: never
+      listen: restart jellyfin
 
     - name: Jellyfin | Wait until configuration is loaded
       uri:
@@ -20,3 +21,4 @@
       until: jellyfin_up.status == 200
       retries: 30
       delay: 5
+      listen: restart jellyfin
