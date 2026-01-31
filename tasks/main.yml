@@ -1,7 +1,7 @@
 # tasks file for homeflix
 ---
-# Services installation
-- import_tasks: install_services.yml
+- name: Import task to install the services
+  import_tasks: install_services.yml
   when: molecule_test | default(true)
   tags:
     - update_docker_compose
@@ -14,41 +14,35 @@
     - update_qbittorrent
     - update_recyclarr
 
-# Services configuration
-- import_tasks: config_jellyfin.yml
+- name: Import tasks to configure the services
   when: molecule_test is not defined
-  tags: update_jellyfin
+  block:
+    - import_tasks: config_jellyfin.yml
+      tags: update_jellyfin
 
-- import_tasks: config_qbittorent.yml
-  when: molecule_test is not defined
-  tags: update_qbittorrent
+    - import_tasks: config_qbittorrent.yml
+      tags: update_qbittorrent
 
-- import_tasks: config_radarr_sonarr.yml
-  when: molecule_test is not defined
-  vars:
-    service_name: radarr
-    service_port: "{{ homeflix_radarr_port }}"
-  tags: update_radarr
+    - import_tasks: config_radarr_sonarr.yml
+      vars:
+        service_name: radarr
+        service_port: "{{ homeflix_radarr_port }}"
+      tags: update_radarr
 
-- import_tasks: config_radarr_sonarr.yml
-  when: molecule_test is not defined
-  vars:
-    service_name: sonarr
-    service_port: "{{ homeflix_sonarr_port }}"
-  tags: update_sonarr
+    - import_tasks: config_radarr_sonarr.yml
+      vars:
+        service_name: sonarr
+        service_port: "{{ homeflix_sonarr_port }}"
+      tags: update_sonarr
 
-- import_tasks: config_prowlarr.yml
-  when: molecule_test is not defined
-  tags: update_prowlarr
+    - import_tasks: config_prowlarr.yml
+      tags: update_prowlarr
 
-- import_tasks: config_bazarr.yml
-  when: molecule_test is not defined
-  tags: update_bazarr
+    - import_tasks: config_bazarr.yml
+      tags: update_bazarr
 
-- import_tasks: config_recyclarr.yml
-  when: molecule_test is not defined
-  tags: update_recyclarr
+    - import_tasks: config_recyclarr.yml
+      tags: update_recyclarr
 
-- import_tasks: config_seerr.yml
-  when: molecule_test is not defined
-  tags: update_seerr
+    - import_tasks: config_seerr.yml
+      tags: update_seerr
