@@ -1,8 +1,7 @@
 {
-  "Movies": {
+{% for library in homeflix_jellyfin_libraries %}
+  "{{ library.name }}": {
     "save_path": "/data/downloads"
-  },
-  "TV Shows": {
-    "save_path": "/data/downloads"
-  }
+  }{% if not loop.last %},{% else %}{{'\n'}}{% endif %}
+{% endfor %}
 }

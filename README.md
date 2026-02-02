@@ -8,15 +8,14 @@
 - [Notes](#notes)
 - [Playbook example](#playbook-example)
 - [Known issues](#known-issues)
-- [How to Contribute](#how-to-contribute)
+- [How to contribute](#how-to-contribute)
 
 ## Requirements
 
-- Linux OS (Ubuntu)
 - Docker
 - Traefik (optional)
 
-For traefik, a dedicated ansible role can be used. It can be found on the follwong link:<br>
+The following role is recommened to be used for Traefik:<br>
 https://galaxy.ansible.com/ui/standalone/roles/cornelcristea/traefik/
 
 ## Description
@@ -65,7 +64,7 @@ The role use the following variables
 | `homeflix_timezone` | Timezone used by all Docker containers. | `Europe/Bucharest` |
 | `homeflix_qbittorrent_password` | Default qBittorrent admin password | `adminadmin` |
 | `homeflix_bazarr_api_key` | Bazarr API key used for automation. | `463482c2b8172db0ba2736f6a0b3dbc7` |
-| `homeflix_jellyfin_api_key` | Jellyfin API key used by Ansible for user and policy management. | `fae9789ce96847aeb834dec33c67ee8e` |
+| `homeflix_jellyfin_api_key` | Jellyfin API key used for automation. | `c62af39cf6634c6ca52c92b02f618b84` |
 | `homeflix_jellyfin_host_domain` | Public domain used by Traefik to expose Jellyfin over HTTPS. | *(empty)* |
 | `homeflix_jellyfin_users` | List of Jellyfin users to add. | `homeflix` user and `pass123` password |
 | `homeflix_jellyfin_plugins` | List of Jellyfin plugins to install. | *(empty)* |
@@ -95,13 +94,12 @@ The role use the following variables
 
 ## Notes
 
-- Traefik reverse proxy network is optional. The `jellyfin_host_domain` will work only if exist `traefik_network` variable.  
-- Each service has default user `admin` and a default password `admin` (for qBittorent, the password is `adminadmin`). **After first deploy, the passowrds have to be changed.**
-- Jellyfin and Bazarr have a default API key that needs to be generated after first deploy and save them as variables (check `default.yml`). Do same thing with qBittorrent password.
-- Always use **encrypted passwords** in playbook for sensitive services.  
 - Make sure **ports are available** before deployment.  
-- <b>After deployment, update API keys and passwords to secure values.</b>
-- <b>The role does not use any VPN for download. Use on your own</b>
+- **Traefik** reverse proxy network is optional. The `jellyfin_host_domain` will work only if `traefik_network` variable exists.
+- Each service has a default user `admin` with password `admin` (for qBittorent, the password is `adminadmin`). 
+- Jellyfin and Bazarr have a default API key used for automation store in variable.
+- **After first deployment, change the password for default user, generate new API keys and save them as encrypted in playbook**
+- **No VPN is used for downloads - use it on your own risks**
 
 ## Playbook example
 
@@ -109,9 +107,9 @@ The role use the following variables
 - hosts: servers
   roles:
     - role: homeflix
-      vars:
-        homeflix_timezone: UTC
-        homeflix_jellyfin_server_name: HomeFlix
+  vars:
+    homeflix_timezone: UTC
+    homeflix_jellyfin_server_name: HomeFlix
 ```
 
 ## Tags
@@ -123,13 +121,13 @@ When running the playbook to deploy the Homeflix services, specific tags can be 
 | `update_docker_compose` | Update docker-compose file and redeploy services |
 | `update_bazarr` | Update Bazarr service |
 | `update_jellyfin` | Update Jellyfin service |
-| `update_jellyfin_branding` | Update Jellyfin branding (custom CSS, splash screen, etc.) |
-| `update_jellyfin_libraries` | Update Jellyfin media libraries (scan for new/removed media) |
+| `update_jellyfin_branding` | Update Jellyfin branding (custom CSS, splash screen) |
+| `update_jellyfin_libraries` | Add or delete Jellyfin libraries |
 | `update_jellyfin_plugins` | Download and install Jellyfin plugins |
 | `update_jellyfin_server_name` | Update the Jellyfin server name in its configuration |
-| `update_jellyfin_users` | Add or remove Jellyfin user accounts |
+| `update_jellyfin_users` | Add or delete Jellyfin user accounts |
 | `update_prowlarr` | Update Prowlarr service |
-| `update_prowlarr_indexers` | Add or remove Prowlarr indexers (RSS/automation sources) |
+| `update_prowlarr_indexers` | Add or delete Prowlarr indexers |
 | `update_qbittorrent` | Update qBittorrent service |
 | `update_radarr` | Update Radarr service |
 | `update_recyclarr` | Update Recyclarr service |
@@ -181,5 +179,4 @@ git push origin my-feature-branch
  
 Submit a PR from your branch. Include a clear description of your changes and why they’re needed.
 
-### We appreciate your contributions!
-
+**We appreciate your contributions!**

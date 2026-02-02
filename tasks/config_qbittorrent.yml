@@ -16,29 +16,21 @@
         service_name: qbittorrent
       include_tasks: stop_service.yml
 
-    - name: qBittorrent | Generate config file
-      vars:
-        qb_files:
-          - qBittorrent.conf.j2
-          - categories.json.j2
-      template:
-        src: "{{ item }}"
-        dest: "{{ homeflix_apps_volume }}/qbittorrent/qBittorrent/{{ item | basename | splitext | first }}"
+    - name: qBittorrent | Copy config file
+      copy:
+        src: qBittorrent.conf
+        dest: "{{ homeflix_apps_volume }}/qbittorrent/qBittorrent/qBittorrent.conf"
         owner: 1000
         group: 1000
-        mode: 0755
-      loop: "{{ qb_files }}"
-      loop_control:
-        label: "{{ item | basename | splitext | first }}"
+        mode: 0664
 
-    - name: qBittorrent | Include task to restart the service
-      vars:
-        service_name: qbittorrent
-      include_tasks: stop_service.yml
-
-    - name: qBittorrent | Include task to wait for service
-      vars:
-        service_name: "{{ homeflix_qbittorrent_port }}"
-      include_tasks: wait_for_service.yml
-
+    - name: qBittorrent | Generate categories file
+      template:
+        src: categories.json.j2
+        dest: "{{ homeflix_apps_volume }}/qbittorrent/qBittorrent/categories.json"
+        owner: 1000
+        group: 1000
+        mode: 0644
   when: qbittorrent_first_run
+  notify: 
+    - restart qbittorrent

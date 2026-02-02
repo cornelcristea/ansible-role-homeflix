@@ -26,7 +26,7 @@ homeflix_jellyfin_api_key: c62af39cf6634c6ca52c92b02f618b84
 # traefik acts as a reverse proxy and handles HTTPS certificates
 # makes jellyfin accessible on smart tv, phones from an external network
 # if using tailscale for private access, this is not needed
-# homeflix_jellyfin_host_domain: myhomeflix.com
+# example: my-homeflix-url.com
 homeflix_jellyfin_host_domain: []
 
 # name shown in dashboard and in the browser tabs
@@ -42,15 +42,13 @@ homeflix_jellyfin_users:
     isHidden: false
 
 # homeflix_jellyfin_plugins:
-#   - name: Example
-#     src: https://example.com/plugins/file.zip
+#   - name: MyPlugin
+#     src: https://example.com/blablabla/plugin.zip
 homeflix_jellyfin_plugins: []
 
 # homeflix_jellyfin_custom_css: |
-#   @import(url/to/file.css);
-#   :root {
-#     --bold: 18px
-#   }
+#   @import(https://example.com/blablabla/file.css);
+#   :root { --bold: 18px }
 homeflix_jellyfin_custom_css: []
 
 homeflix_jellyfin_splash_screen_enabled: false
@@ -59,6 +57,7 @@ homeflix_jellyfin_libraries_extra: []
 
 homeflix_prowlarr_indexers_extra: []
 
+# NOT WORKING
 # homeflix_bazarr_lang_profiles:
 #   - name: Homeflix_Ro_En
 #     languages: [ron, eng]

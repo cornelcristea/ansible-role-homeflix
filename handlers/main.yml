@@ -22,3 +22,10 @@
       retries: 30
       delay: 5
       listen: restart jellyfin
+
+- name:  qBittorrent | Restart service
+  vars:
+    service_name: qbittorrent
+  include_tasks: restart_service.yml
+  listen: restart qbittorrent
+  
