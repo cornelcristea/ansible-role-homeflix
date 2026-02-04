@@ -133,8 +133,8 @@
               value: "admin"
             - name: password
               value: "{{ homeflix_qbittorrent_password }}"
-            - name: "{{ 'tvCategory' if service_namae == 'sonarr' else 'movieCategory' }}"
-              value: "{{ 'tv' if service_namae == 'sonarr' else 'movies' }}"
+            - name: "{{ 'tvCategory' if service_name == 'sonarr' else 'movieCategory' }}"
+              value: "{{ 'tv' if service_name == 'sonarr' else 'movies' }}"
           configContract: "QBittorrentSettings"
           tags: []
         status_code: 201
