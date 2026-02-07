@@ -73,24 +73,7 @@ The role use the following variables
 | `homeflix_jellyfin_splash_screen_enabled` | Enable or disable Jellyfin splash screen. | `false` |
 | `homeflix_jellyfin_libraries_extra` | Additional Jellyfin libraries beyond defaults. | *(empty)* |
 | `homeflix_prowlarr_indexers_extra` | Extra Prowlarr indexers appended to defaults. | *(empty)* |
-| `homeflix_puid` | UID used inside Docker containers. | `1000` |
-| `homeflix_pgid` | GID used inside Docker containers. | `1000` |
-| `homeflix_apps_volume` | Host path where application configs are stored. | `/opt/homeflix` |
-| `homeflix_data_volume` | Host path where media data is stored. | `/mnt/homeflix` |
-| `homeflix_data_folders` | Media folders created under data volume. | `downloads, movies, tv` |
 | `homeflix_data_folders_extra` | Estra media folders. | *(empty)* |
-| `homeflix_bazarr_port` | Bazarr web UI port. | `6767` |
-| `homeflix_jellyfin_port` | Jellyfin HTTP port. | `8096` |
-| `homeflix_jellyfin_port_https` | Jellyfin HTTPS port. | `8920` |
-| `homeflix_prowlarr_port` | Prowlarr web UI port. | `9696` |
-| `homeflix_qbittorrent_port` | qBittorrent web UI port. | `8080` |
-| `homeflix_radarr_port` | Radarr web UI port. | `7878` |
-| `homeflix_seerr_port` | Overseerr web UI port. | `5055` |
-| `homeflix_sonarr_port` | Sonarr web UI port. | `8989` |
-| `homeflix_docker_services` | List of Docker services deployed by the role. | bazarr, jellyfin, radarr, etc. |
-| `homeflix_jellyfin_login_disclaimer` | Text shown on Jellyfin login screen. | predefined |
-| `homeflix_jellyfin_libraries` | Default Jellyfin libraries. | Movies, TV Shows |
-| `homeflix_prowlarr_indexers` | Default Prowlarr indexers configuration. | LimeTorrents, 1337x, etc. |
 
 ## Notes
 
@@ -104,7 +87,8 @@ The role use the following variables
 ## Playbook example
 
 ```yaml
-- hosts: servers
+- name: Deploy HomeFlix
+  hosts: servers
   roles:
     - role: homeflix
   vars:
@@ -119,6 +103,7 @@ When running the playbook to deploy the Homeflix services, specific tags can be 
 | Name | Description |
 |------|-------------|
 | `update_docker_compose` | Update docker-compose file and redeploy services |
+| `update_homeflix_dirs` | Update apps and data directories |
 | `update_bazarr` | Update Bazarr service |
 | `update_jellyfin` | Update Jellyfin service |
 | `update_jellyfin_branding` | Update Jellyfin branding (custom CSS, splash screen) |
