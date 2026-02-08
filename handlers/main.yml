@@ -1,17 +1,13 @@
 ---
 - name: Restart Jellyfin and wait until is up
   block:
-    - name: Jellyfin | Restart service
-      become: true
-      community.docker.docker_compose_v2:
-        project_src: "{{ homeflix_apps_volume }}"
-        state: restarted
-        services:
-          - jellyfin
-        build: never
+    - name: Restart Jellyfin
+      vars:
+        service_name: jellyfin
+      include_tasks: restart_service.yml
       listen: restart jellyfin
 
-    - name: Jellyfin | Wait until configuration is loaded
+    - name: Wait until Jellyfin is loaded
       uri:
         url: "http://localhost:{{ homeflix_jellyfin_port }}/Startup/Configuration"
         method: GET
@@ -23,8 +19,14 @@
       delay: 5
       listen: restart jellyfin
 
-- name: qBittorrent | Restart service
+- name: Restart qBittorrent
   vars:
     service_name: qbittorrent
   include_tasks: restart_service.yml
   listen: restart qbittorrent
+
+- name: Restart Recyclarr
+  vars:
+    service_name: recyclarr
+  include_tasks: restart_service.yml
+  listen: restart recyclarr
