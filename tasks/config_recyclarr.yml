@@ -19,13 +19,7 @@
     owner: 1000
     group: 1000
     mode: 0644
-  register: recyclarr_yml
-
-- name: Recyclarr | Include task to restart the service
-  vars:
-    service_name: recyclarr
-  include_tasks: restart_service.yml
-  when: recyclarr_yml.changed
+  notify: restart recyclarr
 
 - name: Recyclarr | Please read this message
   debug:

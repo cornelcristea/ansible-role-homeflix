@@ -114,6 +114,7 @@
           Hostname: http://radarr
           Port: {{ homeflix_radarr_port }}
       7. Enjoy!
+    mode: 0664
   delegate_to: localhost
 
 - name: Display configuration message

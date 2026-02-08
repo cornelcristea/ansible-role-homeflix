@@ -15,6 +15,7 @@
     bazarr_first_run: "{{ (config_yaml.content | b64decode | from_yaml).auth.type is none }}"
 
 - name: block - First run tasks
+  when: bazarr_first_run
   block:
     - name: Bazarr | Include task to stop the service
       vars:
@@ -61,7 +62,6 @@
       vars:
         service_port: "{{ homeflix_bazarr_port }}"
       include_tasks: wait_for_service.yml
-  when: bazarr_first_run
 
 # TO DO: Add languages profile with Ansible
 # - name: Bazarr | Get existing language profiles

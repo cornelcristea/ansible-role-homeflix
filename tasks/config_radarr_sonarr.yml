@@ -15,6 +15,7 @@
     service_first_run: "{{ ('<AuthenticationMethod>None</AuthenticationMethod>' in (config_xml.content | b64decode | string)) }}"
 
 - name: block - First run tasks
+  when: service_first_run
   block:
     - name: "{{ service_name | capitalize }} | Include task to stop the service"
       include_tasks: stop_service.yml
@@ -38,7 +39,6 @@
 
     - name: "{{ service_name | capitalize }} | Include task to wait for service"
       include_tasks: wait_for_service.yml
-  when: service_first_run
 
 - name: block - Media management tasks
   block:

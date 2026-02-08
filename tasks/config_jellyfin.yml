@@ -21,25 +21,12 @@
     jellyfin_first_run: "{{ ('<IsStartupWizardCompleted>false</IsStartupWizardCompleted>' in (system_xml.content | b64decode | string)) }}"
 
 - name: block - First run tasks
+  when: jellyfin_first_run
   block:
     - name: Jellyfin | Include task to stop the service
       vars:
         service_name: jellyfin
       include_tasks: stop_service.yml
-
-    # - name: Jellyfin | Remove initial installation
-    #   file:
-    #     path: "{{ homeflix_apps_volume }}/jellyfin"
-    #     state: absent
-
-    # - name: Jellyfin | Extract preconfigured installation
-    #   unarchive:
-    #     src: jellyfin.tar.xz
-    #     dest: "{{ homeflix_apps_volume }}"
-    #     remote_src: false
-    #     owner: 1000
-    #     group: 1000
-    #     mode: 0755
 
     - name: Jellyfin | Copy database
       copy:
@@ -70,9 +57,10 @@
       until: jellyfin_up.status == 200
       retries: 30
       delay: 5
-  when: jellyfin_first_run
 
 - name: block - Manage server name tasks
+  tags:
+    - update_jellyfin_server_name
   block:
     - name: Jellyfin | Get current server name
       uri:
@@ -95,10 +83,10 @@
           ServerName: "{{ homeflix_jellyfin_server_name }}"
         status_code: 204
       when: startup_config.json.ServerName != homeflix_jellyfin_server_name
-  tags:
-    - update_jellyfin_server_name
 
 - name: block - Manage users tasks
+  tags:
+    - update_jellyfin_users
   block:
     - name: Jellyfin | Get existing users
       uri:
@@ -178,10 +166,10 @@
       loop: "{{ homeflix_jellyfin_users }}"
       loop_control:
         label: "{{ item.username }}"
-  tags:
-    - update_jellyfin_users
 
 - name: block - Manage libraries tasks
+  tags:
+    - update_jellyfin_libraries
   block:
     - name: Jellyfin | Get existing libraries
       uri:
@@ -237,10 +225,11 @@
         headers:
           X-Emby-Token: "{{ homeflix_jellyfin_api_key }}"
         status_code: 204
-  tags:
-    - update_jellyfin_libraries
 
 - name: block - Manage plugins tasks
+  notify: restart jellyfin
+  tags:
+    - update_jellyfin_plugins
   block:
     - name: Jellyfin | Get installed plugins
       uri:
@@ -296,11 +285,11 @@
       loop: "{{ removable_plugins }}"
       loop_control:
         label: "{{ item }}"
-  notify: restart jellyfin
-  tags:
-    - update_jellyfin_plugins
 
 - name: block - Manage brading tasks
+  notify: restart jellyfin
+  tags:
+    - update_jellyfin_branding
   block:
     - name: Jellyfin | Copy splash screen
       copy:
@@ -318,6 +307,3 @@
         group: 1000
         mode: 0644
       register: branding_xml
-  notify: restart jellyfin
-  tags:
-    - update_jellyfin_branding

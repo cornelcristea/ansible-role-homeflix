@@ -10,6 +10,7 @@
     qbittorrent_first_run: "{{ 'Password_PBKDF2' not in (conf_file.content | b64decode) }}"
 
 - name: block - First run tasks
+  when: qbittorrent_first_run
   block:
     - name: qBittorrent | Include task to stop the service
       vars:
@@ -23,6 +24,4 @@
         owner: 1000
         group: 1000
         mode: 0664
-  when: qbittorrent_first_run
-  notify:
-    - restart qbittorrent
+      notify: restart qbittorrent
