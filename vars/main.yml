@@ -25,49 +25,50 @@ homeflix_docker_services:
     image: lscr.io/linuxserver/bazarr:latest
     ports:
       - "{{ homeflix_bazarr_port }}:6767"
+
   - name: flaresolverr
     image: ghcr.io/flaresolverr/flaresolverr:latest
     ports:
       - "8191:8191" # do not change (database dependent)
+
   - name: jellyfin
     image: lscr.io/linuxserver/jellyfin:latest
     ports:
       - "{{ homeflix_jellyfin_port }}:8096"
       - "{{ homeflix_jellyfin_port_https }}:8920"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.jellyfin.rule=Host(`{{ homeflix_jellyfin_host_domain }}`)"
-      - "traefik.http.routers.jellyfin.entrypoints=https"
-      - "traefik.http.routers.jellyfin.tls=true"
-      - "traefik.http.routers.jellyfin.tls.certresolver=letsencrypt"
-      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+
   - name: qbittorrent
     image: lscr.io/linuxserver/qbittorrent:latest
     ports:
       - "{{ homeflix_qbittorrent_port }}:8080"
       - "6881:6881/tcp"
       - "6881:6881/udp"
+
   - name: radarr
     image: lscr.io/linuxserver/radarr:latest
     ports:
       - "{{ homeflix_radarr_port }}:7878"
+
   - name: recyclarr
     image: ghcr.io/recyclarr/recyclarr:latest
+
   - name: prowlarr
     image: lscr.io/linuxserver/prowlarr:latest
     ports:
       - "{{ homeflix_prowlarr_port }}:9696"
+
   - name: seerr
     image: ghcr.io/hotio/seerr:latest
     ports:
       - "{{ homeflix_seerr_port }}:5055"
+
   - name: sonarr
     image: lscr.io/linuxserver/sonarr:latest
     ports:
       - "{{ homeflix_sonarr_port }}:8989"
 
 homeflix_jellyfin_login_disclaimer: |
-  Deployed by Ansible @ cornelcristea.homeflix
+  Managed by Ansible @ cornelcristea.homeflix
 
 homeflix_jellyfin_libraries:
   - { name: Movies, collection_type: movies, path: /data/movies }

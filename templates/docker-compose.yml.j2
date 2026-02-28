@@ -25,20 +25,4 @@ services:
       - "{{ port }}"
 {% endfor %}
 {% endif %}
-{% if traefik_network is defined %}
-    networks:
-      - {{ traefik_network }}
-{% if service.labels is defined %}
-    labels:
-{% for label in service.labels %}
-      - "{{ label }}"
 {% endfor %}
-{% endif -%}
-{% endif %}
-
-{% endfor %}
-{% if traefik_network is defined %}
-networks:
-  {{ traefik_network }}:
-    external: true
-{% endif %}
