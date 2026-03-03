@@ -64,9 +64,9 @@
 #       copy:
 #         src: db.sqlite3
 #         dest: "{{ homeflix_apps_volume }}/seerr/db/db.sqlite3"
-#         owner: 1000
-#         group: 1000
-#         mode: 0644
+#         owner: "{{ homeflix_puid }}"
+#         group: "{{ homeflix_pgid }}"
+#         mode: "0644"
 
 #     - name: Seerr | Generate settings file
 #       vars:
@@ -77,9 +77,9 @@
 #       template:
 #         src: settings.json.j2
 #         dest: "{{ homeflix_apps_volume }}/seerr/settings.json"
-#         owner: 1000
-#         group: 1000
-#         mode: 0755
+#         owner: "{{ homeflix_puid }}"
+#         group: "{{ homeflix_pgid }}"
+#         mode: "0755"
 
 #     - name: Seerr | Include task to restart the service
 #       vars:

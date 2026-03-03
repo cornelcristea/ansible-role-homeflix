@@ -38,9 +38,9 @@
       copy:
         src: bazarr.db
         dest: "{{ homeflix_apps_volume }}/bazarr/db/bazarr.db"
-        owner: 1000
-        group: 1000
-        mode: 0755
+        owner: "{{ homeflix_puid }}"
+        group: "{{ homeflix_pgid }}"
+        mode: "0755"
 
     - name: Bazarr | Generate config file
       vars:
@@ -49,9 +49,9 @@
       template:
         src: config.yaml.j2
         dest: "{{ homeflix_apps_volume }}/bazarr/config/config.yaml"
-        owner: 1000
-        group: 1000
-        mode: 0755
+        owner: "{{ homeflix_puid }}"
+        group: "{{ homeflix_pgid }}"
+        mode: "0755"
 
     - name: Bazarr | Include task to restart the service
       vars:

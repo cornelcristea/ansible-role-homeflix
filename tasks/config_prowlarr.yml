@@ -31,9 +31,9 @@
       copy:
         src: prowlarr.db
         dest: "{{ homeflix_apps_volume }}/prowlarr/prowlarr.db"
-        owner: 1000
-        group: 1000
-        mode: 0755
+        owner: "{{ homeflix_puid }}"
+        group: "{{ homeflix_pgid }}"
+        mode: "0755"
 
     - name: Prowlarr | Update config file
       replace:
