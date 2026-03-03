@@ -12,11 +12,7 @@
 
 ## Requirements
 
-- Docker
-- Traefik (optional)
-
-The following role is recommened to be used for Traefik:<br>
-https://galaxy.ansible.com/ui/standalone/roles/cornelcristea/traefik/
+- Docker (installed on host)
 
 ## Description
 
@@ -65,7 +61,6 @@ The role use the following variables
 | `homeflix_qbittorrent_password` | Default qBittorrent admin password | `adminadmin` |
 | `homeflix_bazarr_api_key` | Bazarr API key used for automation. | `463482c2b8172db0ba2736f6a0b3dbc7` |
 | `homeflix_jellyfin_api_key` | Jellyfin API key used for automation. | `c62af39cf6634c6ca52c92b02f618b84` |
-| `homeflix_jellyfin_host_domain` | Public domain used by Traefik to expose Jellyfin over HTTPS. | *(empty)* |
 | `homeflix_jellyfin_users` | List of Jellyfin users to add. | `homeflix` user and `pass123` password |
 | `homeflix_jellyfin_plugins` | List of Jellyfin plugins to install. | *(empty)* |
 | `homeflix_jellyfin_custom_css` | Custom CSS injected into Jellyfin UI. | *(empty)* |
@@ -78,7 +73,6 @@ The role use the following variables
 ## Notes
 
 - Make sure **ports are available** before deployment.  
-- **Traefik** reverse proxy network is optional. The `jellyfin_host_domain` will work only if `traefik_network` variable exists.
 - Each service has a default user `admin` with password `admin` (for qBittorent, the password is `adminadmin`). 
 - Jellyfin and Bazarr have a default API key used for automation store in variable.
 - **After first deployment, change the password for default user, generate new API keys and save them as encrypted in playbook**
@@ -89,11 +83,11 @@ The role use the following variables
 ```yaml
 - name: Deploy HomeFlix
   hosts: servers
-  roles:
-    - role: homeflix
   vars:
     homeflix_timezone: UTC
     homeflix_jellyfin_server_name: HomeFlix
+  roles:
+    - homeflix
 ```
 
 ## Tags
@@ -139,9 +133,9 @@ cd ansible-role-homeflix
 
 **3. Create a new branch**
 
-  ```bash
-  git checkout -b my-feature-branch
-  ```
+```bash
+git checkout -b my-feature-branch
+```
 
   * Make your changes following Ansible best practices.
   * Add or update tests if applicable.
