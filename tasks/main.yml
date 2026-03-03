@@ -36,7 +36,7 @@
       loop_control:
         label: "{{ item }}"
   tags:
-    - update_homeflix_dirs
+    - update_dirs
 
 - name: block - Manage docker compose tasks
   when: molecule_test | default(true)

@@ -97,7 +97,7 @@ When running the playbook to deploy the Homeflix services, specific tags can be 
 | Name | Description |
 |------|-------------|
 | `update_docker_compose` | Update docker-compose file and redeploy services |
-| `update_homeflix_dirs` | Update apps and data directories |
+| `update_dirs` | Update apps and data directories |
 | `update_bazarr` | Update Bazarr service |
 | `update_jellyfin` | Update Jellyfin service |
 | `update_jellyfin_branding` | Update Jellyfin branding (custom CSS, splash screen) |
