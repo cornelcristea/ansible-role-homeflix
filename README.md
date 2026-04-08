@@ -26,7 +26,7 @@ This Ansible role deploys a full **media server stack** as docker containers:
 - **Radarr:** Movies manager
 - **Recyclarr:** Syncs TRaSH-Guides settings to Sonarr/Radarr
 - **Seer:** Media requester
-- **Sonarr:** TV shows manager 
+- **Sonarr:** Series manager 
 
 The working flow of these services is described in the following diagram.
 
@@ -39,7 +39,7 @@ Prowlarr (Indexers) --> Flaresolverr (Cloudflare bypass)
       +-----------------+
       |                 |
       v                 v
-  Radarr (Movies)   Sonarr (TV Shows)
+  Radarr (Movies)   Sonarr (Series)
       |                 |
       +------> Recyclarr (TRaSH Rules)
       |                 |
@@ -69,6 +69,14 @@ The role use the following variables
 | `homeflix_jellyfin_libraries_extra` | Additional Jellyfin libraries beyond defaults. | *(empty)* |
 | `homeflix_prowlarr_indexers_extra` | Extra Prowlarr indexers appended to defaults. | *(empty)* |
 | `homeflix_data_folders_extra` | Estra media folders. | *(empty)* |
+| `homeflix_bazarr_port` | Port for Bazarr service. | `6767` |
+| `homeflix_jellyfin_port` | Port for Jellyfin service. | `8096` |
+| `homeflix_jellyfin_port_https` | Port for Jellyfin service (https). | `8920` |
+| `homeflix_prowlarr_port` | Port for Prowlarr service. | `9696` |
+| `homeflix_qbittorrent_port` | Port for qBittorrent service. | `8080` |
+| `homeflix_radarr_port` | Port for Radarr service. | `7878` |
+| `homeflix_seerr_port` | Port for Seerr service. | `5055` |
+| `homeflix_sonarr_port` | Port for Sonarr service. | `8989` |
 
 ## Notes
 
