@@ -1,6 +1,16 @@
 ---
 # defaults file for homeflix
 
+# ports for docker services
+homeflix_bazarr_port: 6767
+homeflix_jellyfin_port: 8096
+homeflix_jellyfin_port_https: 8920
+homeflix_prowlarr_port: 9696
+homeflix_qbittorrent_port: 8080
+homeflix_radarr_port: 7878
+homeflix_seerr_port: 5055
+homeflix_sonarr_port: 8989
+
 # timezone for docker services
 homeflix_timezone: Europe/Bucharest
 

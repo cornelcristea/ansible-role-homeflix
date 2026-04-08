@@ -1,24 +1,15 @@
 ---
 # vars file for homeflix
 
-homeflix_puid: 1000
-homeflix_pgid: 1000
+homeflix_user_uid: 1000
+homeflix_user_gid: 1000
 
 homeflix_apps_volume: /opt/homeflix
 homeflix_data_volume: /mnt/homeflix
 homeflix_data_folders:
   - downloads
   - movies
-  - tv
-
-homeflix_bazarr_port: 6767
-homeflix_jellyfin_port: 8096
-homeflix_jellyfin_port_https: 8920
-homeflix_prowlarr_port: 9696
-homeflix_qbittorrent_port: 8080
-homeflix_radarr_port: 7878
-homeflix_seerr_port: 5055
-homeflix_sonarr_port: 8989
+  - series
 
 homeflix_docker_services:
   - name: bazarr
@@ -71,8 +62,12 @@ homeflix_jellyfin_login_disclaimer: |
   Managed by Ansible @ cornelcristea.homeflix
 
 homeflix_jellyfin_libraries:
-  - { name: Movies, collection_type: movies, path: /data/movies }
-  - { name: TV Shows, collection_type: tvshows, path: /data/tv }
+  - name: Movies
+    collection_type: movies
+    path: /data/movies
+  - name: Series
+    collection_type: tvshows
+    path: /data/series
 
 homeflix_prowlarr_indexers:
   - name: 1337x
