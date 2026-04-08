@@ -1,8 +1,8 @@
 ---
 # vars file for homeflix
 
-homeflix_user_uid: 1000
-homeflix_user_gid: 1000
+homeflix_puid: 1000
+homeflix_pgid: 1000
 
 homeflix_apps_volume: /opt/homeflix
 homeflix_data_volume: /mnt/homeflix

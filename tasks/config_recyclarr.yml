@@ -16,8 +16,8 @@
   template:
     src: recyclarr.yml.j2
     dest: "{{ homeflix_apps_volume }}/recyclarr/recyclarr.yml"
-    owner: "{{ homeflix_user_uid }}"
-    group: "{{ homeflix_user_gid }}"
+    owner: "{{ homeflix_puid }}"
+    group: "{{ homeflix_pgid }}"
     mode: "0644"
   notify: restart recyclarr
 

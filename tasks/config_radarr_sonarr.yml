@@ -24,8 +24,8 @@
       copy:
         src: "{{ service_name }}.db"
         dest: "{{ homeflix_apps_volume }}/{{ service_name }}/{{ service_name }}.db"
-        owner: "{{ homeflix_user_uid }}"
-        group: "{{ homeflix_user_gid }}"
+        owner: "{{ homeflix_puid }}"
+        group: "{{ homeflix_pgid }}"
         mode: "0755"
 
     - name: "{{ service_name | capitalize }} | Update config file"

@@ -32,8 +32,8 @@
       copy:
         src: jellyfin.db
         dest: "{{ homeflix_apps_volume }}/jellyfin/data/data/jellyfin.db"
-        owner: "{{ homeflix_user_uid }}"
-        group: "{{ homeflix_user_gid }}"
+        owner: "{{ homeflix_puid }}"
+        group: "{{ homeflix_pgid }}"
         mode: "0644"
 
     - name: Jellyfin | Update config file
@@ -253,8 +253,8 @@
       file:
         path: "{{ homeflix_apps_volume }}/jellyfin/data/plugins/{{ item.name }}"
         state: directory
-        owner: "{{ homeflix_user_uid }}"
-        group: "{{ homeflix_user_gid }}"
+        owner: "{{ homeflix_puid }}"
+        group: "{{ homeflix_pgid }}"
         mode: "0755"
       loop: "{{ homeflix_jellyfin_plugins }}"
       loop_control:
@@ -265,8 +265,8 @@
         src: "/tmp/{{ item.src | basename }}"
         dest: "{{ homeflix_apps_volume }}/jellyfin/data/plugins/{{ item.name }}"
         remote_src: true
-        owner: "{{ homeflix_user_uid }}"
-        group: "{{ homeflix_user_gid }}"
+        owner: "{{ homeflix_puid }}"
+        group: "{{ homeflix_pgid }}"
         mode: "0755"
         creates: "{{ homeflix_apps_volume }}/jellyfin/data/plugins/{{ item.name }}/plugin.json"
       loop: "{{ homeflix_jellyfin_plugins }}"
@@ -295,15 +295,15 @@
       copy:
         src: "splash-screen.jpg"
         dest: "{{ homeflix_apps_volume }}/jellyfin/data/data/splashscreen-upload.jpg"
-        owner: "{{ homeflix_user_uid }}"
-        group: "{{ homeflix_user_gid }}"
+        owner: "{{ homeflix_puid }}"
+        group: "{{ homeflix_pgid }}"
         mode: "0644"
 
     - name: Jellyfin | Generate branding xml
       template:
         src: branding.xml.j2
         dest: "{{ homeflix_apps_volume }}/jellyfin/branding.xml"
-        owner: "{{ homeflix_user_uid }}"
-        group: "{{ homeflix_user_gid }}"
+        owner: "{{ homeflix_puid }}"
+        group: "{{ homeflix_pgid }}"
         mode: "0644"
       register: branding_xml
