@@ -21,7 +21,7 @@
       copy:
         src: qBittorrent.conf
         dest: "{{ homeflix_apps_volume }}/qbittorrent/qBittorrent/qBittorrent.conf"
-        owner: "{{ homeflix_puid }}"
-        group: "{{ homeflix_pgid }}"
+        owner: "{{ homeflix_user_uid }}"
+        group: "{{ homeflix_user_gid }}"
         mode: "0664"
       notify: restart qbittorrent

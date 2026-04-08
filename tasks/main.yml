@@ -7,8 +7,8 @@
       file:
         path: "{{ item }}"
         state: directory
-        owner: "{{ homeflix_puid }}"
-        group: "{{ homeflix_pgid }}"
+        owner: "{{ homeflix_user_uid }}"
+        group: "{{ homeflix_user_gid }}"
         mode: "0755"
       loop:
         - "{{ homeflix_apps_volume }}"
@@ -18,8 +18,8 @@
       file:
         path: "{{ homeflix_apps_volume }}/{{ item.name }}"
         state: directory
-        owner: "{{ homeflix_puid }}"
-        group: "{{ homeflix_pgid }}"
+        owner: "{{ homeflix_user_uid }}"
+        group: "{{ homeflix_user_gid }}"
         mode: "0755"
       loop: "{{ homeflix_docker_services }}"
       loop_control:
@@ -29,8 +29,8 @@
       file:
         path: "{{ homeflix_data_volume }}/{{ item }}"
         state: directory
-        owner: "{{ homeflix_puid }}"
-        group: "{{ homeflix_pgid }}"
+        owner: "{{ homeflix_user_uid }}"
+        group: "{{ homeflix_user_gid }}"
         mode: "0755"
       loop: "{{ homeflix_data_folders + homeflix_data_folders_extra }}"
       loop_control:
@@ -45,8 +45,8 @@
       template:
         src: docker-compose.yml.j2
         dest: "{{ homeflix_apps_volume }}/docker-compose.yml"
-        owner: "{{ homeflix_puid }}"
-        group: "{{ homeflix_pgid }}"
+        owner: "{{ homeflix_user_uid }}"
+        group: "{{ homeflix_user_gid }}"
         mode: "0644"
 
     - name: Run docker compose

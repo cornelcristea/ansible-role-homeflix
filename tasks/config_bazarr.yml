@@ -38,8 +38,8 @@
       copy:
         src: bazarr.db
         dest: "{{ homeflix_apps_volume }}/bazarr/db/bazarr.db"
-        owner: "{{ homeflix_puid }}"
-        group: "{{ homeflix_pgid }}"
+        owner: "{{ homeflix_user_uid }}"
+        group: "{{ homeflix_user_gid }}"
         mode: "0755"
 
     - name: Bazarr | Generate config file
@@ -49,8 +49,8 @@
       template:
         src: config.yaml.j2
         dest: "{{ homeflix_apps_volume }}/bazarr/config/config.yaml"
-        owner: "{{ homeflix_puid }}"
-        group: "{{ homeflix_pgid }}"
+        owner: "{{ homeflix_user_uid }}"
+        group: "{{ homeflix_user_gid }}"
         mode: "0755"
 
     - name: Bazarr | Include task to restart the service

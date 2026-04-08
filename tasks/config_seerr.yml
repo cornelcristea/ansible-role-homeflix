@@ -64,8 +64,8 @@
 #       copy:
 #         src: db.sqlite3
 #         dest: "{{ homeflix_apps_volume }}/seerr/db/db.sqlite3"
-#         owner: "{{ homeflix_puid }}"
-#         group: "{{ homeflix_pgid }}"
+#         owner: "{{ homeflix_user_uid }}"
+#         group: "{{ homeflix_user_gid }}"
 #         mode: "0644"
 
 #     - name: Seerr | Generate settings file
@@ -77,8 +77,8 @@
 #       template:
 #         src: settings.json.j2
 #         dest: "{{ homeflix_apps_volume }}/seerr/settings.json"
-#         owner: "{{ homeflix_puid }}"
-#         group: "{{ homeflix_pgid }}"
+#         owner: "{{ homeflix_user_uid }}"
+#         group: "{{ homeflix_user_gid }}"
 #         mode: "0755"
 
 #     - name: Seerr | Include task to restart the service
@@ -105,7 +105,7 @@
       2. Choose Jellyfin server
       3. URL: http://jellyfin
       4. Choose your credentials for admin user
-      5. Sync libraries and enable Movies and TV Shows (optional you can press Start Scan)
+      5. Sync libraries and enable Movies and Series (optional you can press Start Scan)
       6. Add Sonarr and Radarr as default servers with the following API keys:
         - Sonarr API Key: {{ sonarr_api_key }}
           Hostname: http://sonarr
