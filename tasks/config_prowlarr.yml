@@ -7,7 +7,7 @@
 - name: Prowlarr | Check configuration
   become: true
   slurp:
-    src: "{{ homeflix_apps_volume }}/prowlarr/config.xml"
+    src: "{{ homeflix_host_dir }}/prowlarr/config.xml"
   register: config_xml
   tags:
     - update_prowlarr_indexers
@@ -30,14 +30,14 @@
     - name: Prowlarr | Copy database
       copy:
         src: prowlarr.db
-        dest: "{{ homeflix_apps_volume }}/prowlarr/prowlarr.db"
+        dest: "{{ homeflix_host_dir }}/prowlarr/prowlarr.db"
         owner: "{{ homeflix_puid }}"
         group: "{{ homeflix_pgid }}"
         mode: "0755"
 
     - name: Prowlarr | Update config file
       replace:
-        path: "{{ homeflix_apps_volume }}/prowlarr/config.xml"
+        path: "{{ homeflix_host_dir }}/prowlarr/config.xml"
         regexp: "<AuthenticationMethod>None</AuthenticationMethod>"
         replace: "<AuthenticationMethod>Forms</AuthenticationMethod>"
 
@@ -120,13 +120,13 @@
     - name: Prowlarr | Get Radarr API key
       become: true
       slurp:
-        src: "{{ homeflix_apps_volume }}/radarr/config.xml"
+        src: "{{ homeflix_host_dir }}/radarr/config.xml"
       register: radarr_xml
 
     - name: Prowlarr | Get Sonarr API key
       become: true
       slurp:
-        src: "{{ homeflix_apps_volume }}/sonarr/config.xml"
+        src: "{{ homeflix_host_dir }}/sonarr/config.xml"
       register: sonarr_xml
 
     - name: Prowlarr | Add Radarr application

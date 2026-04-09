@@ -6,7 +6,7 @@
 - name: "{{ service_name | capitalize }} | Check configuration"
   become: true
   slurp:
-    src: "{{ homeflix_apps_volume }}/{{ service_name }}/config.xml"
+    src: "{{ homeflix_host_dir }}/{{ service_name }}/config.xml"
   register: config_xml
 
 - name: "{{ service_name | capitalize }} | Determine first run"
@@ -23,14 +23,14 @@
     - name: "{{ service_name | capitalize }} | Copy database"
       copy:
         src: "{{ service_name }}.db"
-        dest: "{{ homeflix_apps_volume }}/{{ service_name }}/{{ service_name }}.db"
+        dest: "{{ homeflix_host_dir }}/{{ service_name }}/{{ service_name }}.db"
         owner: "{{ homeflix_puid }}"
         group: "{{ homeflix_pgid }}"
         mode: "0755"
 
     - name: "{{ service_name | capitalize }} | Update config file"
       replace:
-        path: "{{ homeflix_apps_volume }}/{{ service_name }}/config.xml"
+        path: "{{ homeflix_host_dir }}/{{ service_name }}/config.xml"
         regexp: "<AuthenticationMethod>None</AuthenticationMethod>"
         replace: "<AuthenticationMethod>Forms</AuthenticationMethod>"
 

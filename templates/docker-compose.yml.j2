@@ -16,7 +16,7 @@ services:
       - TZ={{ homeflix_timezone }}
 {% if service.name != "flaresolverr" %}
     volumes:
-      - "{{ homeflix_apps_volume }}/{{ service.name }}:/config"
+      - "{{ homeflix_host_dir }}/{{ service.name }}:/config"
       - "{{ homeflix_data_volume }}:/data"
 {% endif %}
 {% if service.ports is defined and service.ports | length > 0 %}

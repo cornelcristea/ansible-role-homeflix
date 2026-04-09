@@ -7,7 +7,7 @@
 - name: Bazarr | Check configuration
   become: true
   slurp:
-    src: "{{ homeflix_apps_volume }}/bazarr/config/config.yaml"
+    src: "{{ homeflix_host_dir }}/bazarr/config/config.yaml"
   register: config_yaml
 
 - name: Bazarr | Determine first run
@@ -25,19 +25,19 @@
     - name: Bazarr | Check Sonarr configuration
       become: true
       slurp:
-        src: "{{ homeflix_apps_volume }}/sonarr/config.xml"
+        src: "{{ homeflix_host_dir }}/sonarr/config.xml"
       register: sonarr_xml
 
     - name: Bazarr | Check Radarr configuration
       become: true
       slurp:
-        src: "{{ homeflix_apps_volume }}/radarr/config.xml"
+        src: "{{ homeflix_host_dir }}/radarr/config.xml"
       register: radarr_xml
 
     - name: Bazarr | Copy database
       copy:
         src: bazarr.db
-        dest: "{{ homeflix_apps_volume }}/bazarr/db/bazarr.db"
+        dest: "{{ homeflix_host_dir }}/bazarr/db/bazarr.db"
         owner: "{{ homeflix_puid }}"
         group: "{{ homeflix_pgid }}"
         mode: "0755"
@@ -48,7 +48,7 @@
         radarr_api_key: "{{ ((radarr_xml.content | b64decode) | regex_findall('<ApiKey>(.*?)</ApiKey>'))[0] }}"
       template:
         src: config.yaml.j2
-        dest: "{{ homeflix_apps_volume }}/bazarr/config/config.yaml"
+        dest: "{{ homeflix_host_dir }}/bazarr/config/config.yaml"
         owner: "{{ homeflix_puid }}"
         group: "{{ homeflix_pgid }}"
         mode: "0755"

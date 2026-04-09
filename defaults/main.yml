@@ -12,7 +12,7 @@ homeflix_seerr_port: 5055
 homeflix_sonarr_port: 8989
 
 # timezone for docker services
-homeflix_timezone: Europe/Bucharest
+homeflix_timezone: UTC
 
 # list with extra data folders
 # used when jellyfin libraries are added

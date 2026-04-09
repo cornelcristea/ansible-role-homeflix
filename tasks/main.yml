@@ -11,12 +11,12 @@
         group: "{{ homeflix_pgid }}"
         mode: "0755"
       loop:
-        - "{{ homeflix_apps_volume }}"
+        - "{{ homeflix_host_dir }}"
         - "{{ homeflix_data_volume }}"
 
     - name: Create services directories
       file:
-        path: "{{ homeflix_apps_volume }}/{{ item.name }}"
+        path: "{{ homeflix_host_dir }}/{{ item.name }}"
         state: directory
         owner: "{{ homeflix_puid }}"
         group: "{{ homeflix_pgid }}"
@@ -44,7 +44,7 @@
     - name: Generate docker compose file
       template:
         src: docker-compose.yml.j2
-        dest: "{{ homeflix_apps_volume }}/docker-compose.yml"
+        dest: "{{ homeflix_host_dir }}/docker-compose.yml"
         owner: "{{ homeflix_puid }}"
         group: "{{ homeflix_pgid }}"
         mode: "0644"
@@ -52,7 +52,7 @@
     - name: Run docker compose
       become: true
       community.docker.docker_compose_v2:
-        project_src: "{{ homeflix_apps_volume }}"
+        project_src: "{{ homeflix_host_dir }}"
         state: present
         remove_orphans: true
         build: never

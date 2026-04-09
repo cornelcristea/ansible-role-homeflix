@@ -2,7 +2,7 @@
 - name: qBittorrent | Check configuration
   become: true
   slurp:
-    src: "{{ homeflix_apps_volume }}/qbittorrent/qBittorrent/qBittorrent.conf"
+    src: "{{ homeflix_host_dir }}/qbittorrent/qBittorrent/qBittorrent.conf"
   register: conf_file
 
 - name: qBittorrent | Determine first run
@@ -20,7 +20,7 @@
     - name: qBittorrent | Copy config file
       copy:
         src: qBittorrent.conf
-        dest: "{{ homeflix_apps_volume }}/qbittorrent/qBittorrent/qBittorrent.conf"
+        dest: "{{ homeflix_host_dir }}/qbittorrent/qBittorrent/qBittorrent.conf"
         owner: "{{ homeflix_puid }}"
         group: "{{ homeflix_pgid }}"
         mode: "0664"

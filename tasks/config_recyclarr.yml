@@ -1,12 +1,12 @@
 ---
 - name: Recyclarr | Check Radarr configuration
   slurp:
-    src: "{{ homeflix_apps_volume }}/radarr/config.xml"
+    src: "{{ homeflix_host_dir }}/radarr/config.xml"
   register: radarr_xml
 
 - name: Recyclarr | Check Sonarr configuration
   slurp:
-    src: "{{ homeflix_apps_volume }}/sonarr/config.xml"
+    src: "{{ homeflix_host_dir }}/sonarr/config.xml"
   register: sonarr_xml
 
 - name: Recyclarr | Generate settings file
@@ -15,7 +15,7 @@
     sonarr_api_key: "{{ ((sonarr_xml.content | b64decode) | regex_findall('<ApiKey>(.*?)</ApiKey>'))[0] }}"
   template:
     src: recyclarr.yml.j2
-    dest: "{{ homeflix_apps_volume }}/recyclarr/recyclarr.yml"
+    dest: "{{ homeflix_host_dir }}/recyclarr/recyclarr.yml"
     owner: "{{ homeflix_puid }}"
     group: "{{ homeflix_pgid }}"
     mode: "0644"
