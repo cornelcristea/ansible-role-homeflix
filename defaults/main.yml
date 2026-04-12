@@ -1,6 +1,9 @@
 ---
 # defaults file for homeflix
 
+# data volume for docker services
+homeflix_data_volume: "{{ homeflix_host_volume }}/data"
+
 # ports for docker services
 homeflix_bazarr_port: 6767
 homeflix_jellyfin_port: 8096

@@ -7,17 +7,17 @@
 - name: Seerr | Check settings
   become: true
   slurp:
-    src: "{{ homeflix_host_dir }}/seerr/settings.json"
+    src: "{{ homeflix_host_volume }}/seerr/settings.json"
   register: settings_json
 
 - name: Seerr | Get Radarr API key
   slurp:
-    src: "{{ homeflix_host_dir }}/radarr/config.xml"
+    src: "{{ homeflix_host_volume }}/radarr/config.xml"
   register: radarr_xml
 
 - name: Seerr | Get Sonarr API key
   slurp:
-    src: "{{ homeflix_host_dir }}/sonarr/config.xml"
+    src: "{{ homeflix_host_volume }}/sonarr/config.xml"
   register: sonarr_xml
 
 - name: Seerr | Determine first run
@@ -52,18 +52,18 @@
 
 #     - name: Seerr | Get Radarr API key
 #       slurp:
-#         src: "{{ homeflix_host_dir }}/radarr/config.xml"
+#         src: "{{ homeflix_host_volume }}/radarr/config.xml"
 #       register: radarr_xml
 
 #     - name: Seerr | Get Sonarr API key
 #       slurp:
-#         src: "{{ homeflix_host_dir }}/sonarr/config.xml"
+#         src: "{{ homeflix_host_volume }}/sonarr/config.xml"
 #       register: sonarr_xml
 
 #     - name: Seerr | Copy database
 #       copy:
 #         src: db.sqlite3
-#         dest: "{{ homeflix_host_dir }}/seerr/db/db.sqlite3"
+#         dest: "{{ homeflix_host_volume }}/seerr/db/db.sqlite3"
 #         owner: "{{ homeflix_puid }}"
 #         group: "{{ homeflix_pgid }}"
 #         mode: "0644"
@@ -76,7 +76,7 @@
 #         sonarr_api_key: "{{ (sonarr_xml.content | b64decode | regex_findall('<ApiKey>(.*?)</ApiKey>') | first) }}"
 #       template:
 #         src: settings.json.j2
-#         dest: "{{ homeflix_host_dir }}/seerr/settings.json"
+#         dest: "{{ homeflix_host_volume }}/seerr/settings.json"
 #         owner: "{{ homeflix_puid }}"
 #         group: "{{ homeflix_pgid }}"
 #         mode: "0755"

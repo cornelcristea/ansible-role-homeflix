@@ -2,7 +2,7 @@
 - name: Restart the service
   become: true
   community.docker.docker_compose_v2:
-    project_src: "{{ homeflix_host_dir }}"
+    project_src: "{{ homeflix_host_volume }}"
     state: restarted
     services:
       - "{{ service_name }}"
