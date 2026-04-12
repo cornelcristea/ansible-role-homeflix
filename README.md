@@ -26,7 +26,7 @@ This Ansible role deploys a full **media server stack** as docker containers:
 - **Radarr:** Movies manager
 - **Recyclarr:** Syncs TRaSH-Guides settings to Sonarr/Radarr
 - **Seer:** Media requester
-- **Sonarr:** Series manager 
+- **Sonarr:** TV Shows manager 
 
 The working flow of these services is described in the following diagram.
 
@@ -39,7 +39,7 @@ Prowlarr (Indexers) --> Flaresolverr (Cloudflare bypass)
       +-----------------+
       |                 |
       v                 v
-  Radarr (Movies)   Sonarr (Series)
+  Radarr (Movies)   Sonarr (TV Shows)
       |                 |
       +------> Recyclarr (TRaSH Rules)
       |                 |

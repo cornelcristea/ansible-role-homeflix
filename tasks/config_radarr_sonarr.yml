@@ -52,7 +52,7 @@
 
     - name: "{{ service_name | capitalize }} | Add root folder"
       vars:
-        root_folder: "{{ '/data/movies' if service_name == 'radarr' else '/data/series' }}"
+        root_folder: "{{ '/data/movies' if service_name == 'radarr' else '/data/tv' }}"
         root_folder_exists: "{{ existing_root_folders.json | selectattr('path', 'equalto', root_folder) | list | length > 0 }}"
       uri:
         url: "http://localhost:{{ service_port }}/api/v3/rootfolder"
@@ -134,7 +134,7 @@
             - name: password
               value: "{{ homeflix_qbittorrent_password }}"
             - name: "{{ 'tvCategory' if service_name == 'sonarr' else 'movieCategory' }}"
-              value: "{{ 'Series' if service_name == 'sonarr' else 'Movies' }}"
+              value: "{{ 'TV Shows' if service_name == 'sonarr' else 'Movies' }}"
           configContract: "QBittorrentSettings"
           tags: []
         status_code: 201
